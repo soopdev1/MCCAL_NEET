@@ -56,14 +56,14 @@ import org.joda.time.format.DateTimeFormatter;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class Utility {
 
     
 
-    public static boolean test = false;
-    public static boolean dbsviluppo = false;
+    public static boolean test = true;
+    public static boolean dbsviluppo = true;
     
     
     

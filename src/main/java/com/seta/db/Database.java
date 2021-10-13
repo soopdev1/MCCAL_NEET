@@ -71,7 +71,9 @@ public class Database {
                     p.put("serverTimezone", "UTC");
                 }
 
+                System.out.println("com.seta.db.Database.<init>() " + host);
                 this.c = DriverManager.getConnection("jdbc:mysql://" + host, p);
+
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
                 ex.printStackTrace();
                 if (this.c != null) {
@@ -90,7 +92,7 @@ public class Database {
             if (test) {
                 user = "root";
                 password = "fertilizza";
-                host = "172.31.224.159:3306/microcredito_sviluppo";
+                host = "172.31.224.159:3306/microcredito";
             }
 
             try {
@@ -105,7 +107,14 @@ public class Database {
                 p.put("useUnicode", "true");
                 p.put("serverTimezone", "UTC");
                 p.put("zeroDateTimeBehavior", "convertToNull");
+                if (dbsviluppo) {
+                    p.put("useJDBCCompliantTimezoneShift", "true");
+                    p.put("useLegacyDatetimeCode", "false");
+                    p.put("serverTimezone", "UTC");
+                }
+                System.out.println("com.seta.db.Database.<init>() " + host);
                 this.c = DriverManager.getConnection("jdbc:mysql://" + host, p);
+
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | SQLException ex) {
                 ex.printStackTrace();
                 if (this.c != null) {
