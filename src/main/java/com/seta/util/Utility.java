@@ -62,8 +62,8 @@ public class Utility {
 
     
 
-    public static boolean test = true;
-    public static boolean dbsviluppo = true;
+    public static boolean test = false;
+    public static boolean dbsviluppo = false;
     
     
     
