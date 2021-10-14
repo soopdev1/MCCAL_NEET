@@ -119,7 +119,7 @@ var KTDatatablesDataSourceAjaxServer = function () {
                             option += '<div class="dropdown-divider"></div>';
 
 
-                            
+
 
                             option += '<a class="dropdown-item fancyBoxAntoRef" href="fad_calendar.jsp?id=' + row.id + '"><i class="fa fa-calendar"></i> Calendario FAD</a>';
                             for (var x1 = 0; x1 < row.fadroom.length; x1++) {
@@ -142,9 +142,9 @@ var KTDatatablesDataSourceAjaxServer = function () {
                                         '</form>';
                                 option += '<a class="dropdown-item" href="javascript:void(0);" onclick="return document.getElementById(\'frexc_' + row.id + '\').submit();"><i class="fa fa-file-excel" style="margin-top:-2px"></i> Scarica Registro FAD</a>' + formapriexc;
                             }
-                            
+
                             if (row.fadtemp) {
-                                option += '<a class="dropdown-item" href="javascript:void(0);" onclick="uploadFad(' 
+                                option += '<a class="dropdown-item" href="javascript:void(0);" onclick="uploadFad('
                                         + row.id + ')"><i class="fa fa-upload" style="margin-top:-2px"></i> Carica Registro FAD</a>';
                             }
                         }
@@ -620,18 +620,19 @@ function swalTableStory(idprogetto) {
 function valitdatePrg(id, stato, misto) {
     var html = "";
     if (stato === "S1") {
-        html = "<div class='form-group' id='swal_cip'>"
-                + "<label>Assegna Codice Identificativo Percorso (CIP)</label>"
-                + "<input class='form-control obbligatory' id='new_cip' placeholder='CIP'>"
-                + "</div>";
-        if (misto === "true" || misto) {
-            html += '<div class="dropdown-divider"></div>';
-            html += "<div class='form-group' id='swal_cip_misto'>"
+        if (misto === "true") {
+            html = "<div class='form-group' id='swal_cip'>"
+                    + "<label>Assegna Codice Identificativo Percorso (CIP)</label>"
+                    + "<input class='form-control obbligatory' id='new_cip' placeholder='CIP'>"
+                    + "</div><div class='dropdown-divider'></div><div class='form-group' id='swal_cip_misto'>"
                     + "<label>Inserisci Codice Identificativo Percorso (CIP) del progetto collegato</label>"
                     + "<input class='form-control obbligatory' id='new_cip_misto' placeholder='CIP Progetto Professioni'>"
                     + "</div>";
         } else {
-            html += "<input type='hidden' id='new_cip_misto' value='0' />";
+            html = "<div class='form-group' id='swal_cip'>"
+                    + "<label>Assegna Codice Identificativo Percorso (CIP)</label>"
+                    + "<input class='form-control obbligatory' id='new_cip' placeholder='CIP'>"
+                    + "</div><input type='hidden' id='new_cip_misto' value='0' />";
         }
     } else {
         html = "<h4 style='text-align:left;'>Sicuro di voler validare il Progetto Formativo?";
@@ -653,7 +654,7 @@ function valitdatePrg(id, stato, misto) {
                 var err = false;
                 err = checkObblFieldsContent($('#swal_cip')) ? true : err;
 
-                if (misto === "true" || misto) {
+                if (misto === "true") {
                     err = checkObblFieldsContent($('#swal_cip_misto')) ? true : err;
                 }
 
