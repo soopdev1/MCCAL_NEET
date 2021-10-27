@@ -33,7 +33,7 @@ import org.json.JSONObject;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 public class Login extends HttpServlet {
 

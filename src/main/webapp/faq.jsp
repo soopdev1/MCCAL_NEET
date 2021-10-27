@@ -1,7 +1,7 @@
 <%-- 
     Document   : login1
     Created on : 15-ott-2019, 10.42.32
-    Author     : dolivo
+    Author     : rcosco
 --%>
 <%@page import="com.seta.domain.Faq"%>
 <%@page import="java.util.List"%>

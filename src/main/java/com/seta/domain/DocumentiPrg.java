@@ -28,7 +28,7 @@ import javax.persistence.Transient;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 @Entity
 @Table(name = "documenti_progetti")

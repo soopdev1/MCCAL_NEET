@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 public class OperazioniGeneral extends HttpServlet {
 
@@ -36,32 +36,36 @@ public class OperazioniGeneral extends HttpServlet {
         File downloadFile = new File(path);
 
         if (downloadFile.exists()) {
-            FileInputStream inStream = new FileInputStream(downloadFile);
-            String mimeType = Files.probeContentType(downloadFile.toPath());
-            if (mimeType == null) {
-                mimeType = "application/pdf";
+            try (FileInputStream inStream = new FileInputStream(downloadFile)) {
+                String mimeType = Files.probeContentType(downloadFile.toPath());
+                if (mimeType == null) {
+                    mimeType = "application/pdf";
+                }
+                response.setContentType(mimeType);
+                String headerKey = "Content-Disposition";
+                String headerValue = String.format("inline; filename=\"%s\"", downloadFile.getName());
+                response.setHeader(headerKey, headerValue);
+                try (OutputStream outStream = response.getOutputStream()) {
+                    byte[] buffer = new byte[4096 * 4096];
+                    int bytesRead;
+                    while ((bytesRead = inStream.read(buffer)) != -1) {
+                        outStream.write(buffer, 0, bytesRead);
+                    }
+                }
             }
-            response.setContentType(mimeType);
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("inline; filename=\"%s\"", downloadFile.getName());
-            response.setHeader(headerKey, headerValue);
-            OutputStream outStream = response.getOutputStream();
-            byte[] buffer = new byte[4096 * 4096];
-            int bytesRead = -1;
-            while ((bytesRead = inStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-            inStream.close();
-            outStream.close();
-        } else {
+       } else {
             User us = (User) request.getSession().getAttribute("user");
             String page = "page/";
-            if (us.getTipo() == 1) {
-                page += "sa/indexSoggettoAttuatore.jsp";
-            } else if (us.getTipo() == 4) {
-                page += "ci/indexCi.jsp";
-            } else {
-                page += "sa/indexMicrocredito.jsp";
+            switch (us.getTipo()) {
+                case 1:
+                    page += "sa/indexSoggettoAttuatore.jsp";
+                    break;
+                case 4:
+                    page += "ci/indexCi.jsp";
+                    break;
+                default:
+                    page += "sa/indexMicrocredito.jsp";
+                    break;
             }
             response.sendRedirect("redirect.jsp?page=" + page + "&fileNotFound=true");
         }
@@ -72,32 +76,36 @@ public class OperazioniGeneral extends HttpServlet {
         File downloadFile = new File(path);
 
         if (downloadFile.exists()) {
-            FileInputStream inStream = new FileInputStream(downloadFile);
-            String mimeType = Files.probeContentType(downloadFile.toPath());
-            if (mimeType == null) {
-                mimeType = "application/pdf";
+            try (FileInputStream inStream = new FileInputStream(downloadFile)) {
+                String mimeType = Files.probeContentType(downloadFile.toPath());
+                if (mimeType == null) {
+                    mimeType = "application/pdf";
+                }   response.setContentType(mimeType);
+                String headerKey = "Content-Disposition";
+                String headerValue = String.format("attach; filename=\"%s\"", downloadFile.getName());
+                response.setHeader(headerKey, headerValue);
+                try (OutputStream outStream = response.getOutputStream()) {
+                    byte[] buffer = new byte[4096 * 4096];
+                    int bytesRead;
+                    while ((bytesRead = inStream.read(buffer)) != -1) {
+                        outStream.write(buffer, 0, bytesRead);
+                    }
+                }
             }
-            response.setContentType(mimeType);
-            String headerKey = "Content-Disposition";
-            String headerValue = String.format("attach; filename=\"%s\"", downloadFile.getName());
-            response.setHeader(headerKey, headerValue);
-            OutputStream outStream = response.getOutputStream();
-            byte[] buffer = new byte[4096 * 4096];
-            int bytesRead = -1;
-            while ((bytesRead = inStream.read(buffer)) != -1) {
-                outStream.write(buffer, 0, bytesRead);
-            }
-            inStream.close();
-            outStream.close();
+            
         } else {
             User us = (User) request.getSession().getAttribute("user");
             String page = "page/";
-            if (us.getTipo() == 1) {
-                page += "sa/indexSoggettoAttuatore.jsp";
-            } else if (us.getTipo() == 4) {
-                page += "ci/indexCi.jsp";
-            } else {
-                page += "sa/indexMicrocredito.jsp";
+            switch (us.getTipo()) {
+                case 1:
+                    page += "sa/indexSoggettoAttuatore.jsp";
+                    break;
+                case 4:
+                    page += "ci/indexCi.jsp";
+                    break;
+                default:
+                    page += "sa/indexMicrocredito.jsp";
+                    break;
             }
             response.sendRedirect("redirect.jsp?page=" + page + "&fileNotFound=true");
         }
@@ -109,24 +117,26 @@ public class OperazioniGeneral extends HttpServlet {
         Database db1 = new Database();
         String base64 = db1.getBase64Report(Integer.parseInt(idpr));
         db1.closeDB();
-
-//        String base64 = new ExcelFAD().generatereportFAD_multistanza(idpr);
         if (base64 != null) {
             String headerKey = "Content-Disposition";
             String headerValue = String.format("attachment; filename=\"%s\"", new Object[]{"Progetto_" + idpr + "_report_FAD.xlsx"});
             response.setHeader(headerKey, headerValue);
-            OutputStream outStream = response.getOutputStream();
-            outStream.write(Base64.getDecoder().decode(base64.getBytes()));
-            outStream.close();
+            try (OutputStream outStream = response.getOutputStream()) {
+                outStream.write(Base64.getDecoder().decode(base64.getBytes()));
+            }
         } else {
             User us = (User) request.getSession().getAttribute("user");
             String page = "page/";
-            if (us.getTipo() == 1) {
-                page += "sa/indexSoggettoAttuatore.jsp";
-            } else if (us.getTipo() == 4) {
-                page += "ci/indexCi.jsp";
-            } else {
-                page += "sa/indexMicrocredito.jsp";
+            switch (us.getTipo()) {
+                case 1:
+                    page += "sa/indexSoggettoAttuatore.jsp";
+                    break;
+                case 4:
+                    page += "ci/indexCi.jsp";
+                    break;
+                default:
+                    page += "sa/indexMicrocredito.jsp";
+                    break;
             }
             response.sendRedirect("redirect.jsp?page=" + page + "&noFileFound=true");
         }

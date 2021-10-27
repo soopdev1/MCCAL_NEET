@@ -1,7 +1,7 @@
 <%-- 
     Document   : modelli
     Created on : 2-mar-2020, 12.41.15
-    Author     : agodino
+    Author     : rcosco
 --%>
 <%@page import="com.seta.db.Action"%>
 <%@page import="com.seta.domain.Cloud"%>

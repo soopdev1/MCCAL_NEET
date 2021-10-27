@@ -10,7 +10,7 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class Presenti {
 

@@ -49,7 +49,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class QueryMicro extends HttpServlet {
 

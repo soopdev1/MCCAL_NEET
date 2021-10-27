@@ -25,6 +25,8 @@ import static com.mailjet.client.resource.Emailv31.Message.SUBJECT;
 import static com.mailjet.client.resource.Emailv31.Message.TO;
 import static com.mailjet.client.resource.Emailv31.resource;
 import com.seta.db.Entity;
+import com.seta.domain.Email;
+import com.seta.domain.ProgettiFormativi;
 import static com.seta.util.Utility.createDir;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,12 +39,13 @@ import java.util.UUID;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class SendMailJet {
 
@@ -126,76 +129,6 @@ public class SendMailJet {
         return ok;
     }
 
-//    public static boolean sendMailNoDB(String name, String[] to, String[] bcc, String txt, String subject, File file, String mailjet_api, String mailjet_secret) 
-//            throws MailjetException {
-//        MailjetClient client;
-//        MailjetRequest request;
-//        MailjetResponse response;
-//        String filename = "";
-//        String content_type = "";
-//        String b64 = "";
-//
-//        ClientOptions options = ClientOptions.builder()
-//                .apiKey(mailjet_api)
-//                .apiSecretKey(mailjet_secret)
-//                .build();
-//
-//        client = new MailjetClient(options);
-//
-//        JSONArray dest = new JSONArray();
-//        JSONArray ccn = new JSONArray();
-//
-//        for (String s : to) {
-//            dest.put(new JSONObject().put("Email", s)
-//                    .put("Name", ""));
-//        }
-//
-//        if (bcc != null) {
-//            for (String s : bcc) {
-//                ccn.put(new JSONObject().put("Email", s)
-//                        .put("Name", ""));
-//            }
-//        }
-//
-//        JSONObject mail = new JSONObject().put(Emailv31.Message.FROM, new JSONObject()
-//                .put("Email", "yisucal.supporto@microcredito.gov.it")
-//                .put("Name", name))
-//                .put(Emailv31.Message.TO, dest)
-//                .put(Emailv31.Message.BCC, ccn)
-//                .put(Emailv31.Message.SUBJECT, subject)
-//                .put(Emailv31.Message.HTMLPART, txt);
-//
-//        if (file != null) {
-//            try {
-//                filename = file.getName();
-//                content_type = Files.probeContentType(file.toPath());
-//                try (InputStream i = new FileInputStream(file)) {
-//                    b64 = new String(Base64.encodeBase64(IOUtils.toByteArray(i)));
-//                }
-//            } catch (IOException ex) {
-//                ex.printStackTrace();
-//            }
-//            mail.put(Emailv31.Message.ATTACHMENTS, new JSONArray()
-//                    .put(new JSONObject()
-//                            .put("ContentType", content_type)
-//                            .put("Filename", filename)
-//                            .put("Base64Content", b64)));
-//        }
-//
-//        request = new MailjetRequest(Emailv31.resource)
-//                .property(Emailv31.MESSAGES, new JSONArray()
-//                        .put(mail));
-//
-//        response = client.post(request);
-//
-//        boolean ok = response.getStatus() == 200;
-//
-//        if (!ok) {
-//            System.err.println("ERRORE: sendMail - " + response.getStatus() + " -- " + response.getRawResponseContent() + " --- " + response.getData().toList());
-//        }
-//
-//        return ok;
-//    }
     public static boolean sendMailEvento(String name, String[] to, String[] bcc, String txt, String subject, AttachMJ evento, String mailjet_api, String mailjet_secret) throws MailjetException {
 
         MailjetClient client;
@@ -340,5 +273,100 @@ public class SendMailJet {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    //NOTIFICHE
+    public static void notifica_Controllo_MC(Entity e, ProgettiFormativi p) {
+        try {
+            Email email = e.getEmail("cambio_stato_MC");
+            String testostart = "";
+            switch (p.getStato().getId()) {
+                case "S":
+                case "S1":
+                    testostart = "Si informa che il Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> ha provveduto alla creazione di un nuovo progetto formativo (ID " + p.getId() + ").";
+                    break;
+                case "C1":
+                    testostart = "Si informa che il Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> ha provveduto a inviare a controllo microcredito - (Stato " + p.getStato().getDescrizione().toUpperCase()
+                            + ") il progetto formativo (ID " + p.getId() + ").";
+                    break;
+                case "A1":
+                case "FA1":
+                    testostart = "Si informa che il Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> ha provveduto a inviare a controllo microcredito - (Fase A) il progetto formativo (ID " + p.getId() + ").";
+                    break;
+                case "FB1":
+                    testostart = "Si informa che il Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> ha provveduto a inviare a controllo microcredito - (Fase B) il progetto formativo (ID " + p.getId() + ").";
+                    break;
+                case "FB":
+                    testostart = "Si informa lo stato del progetto formativo ID " + p.getId() + " del Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> con CIP " + p.getCip() + " è stato modificato in FASE B.";
+                    break;
+                case "CL":
+                    testostart = "Si informa lo stato del progetto formativo ID " + p.getId() + " del Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> con CIP " + p.getCip() + " è stato modificato in CHECK.";
+                    break;
+                case "AR":
+                    testostart = "Si informa lo stato del progetto formativo ID " + p.getId() + " del Soggetto Attuatore <b>" + p.getSoggetto().getRagionesociale().toUpperCase()
+                            + "</b> con CIP " + p.getCip() + " è stato modificato in ARCHIVIATO.";
+                    break;
+                default:
+                    testostart = "";
+                    break;
+            }
+
+            if (!testostart.equals("")) {
+                String testohtml = email.getTesto();
+                testohtml = testohtml.replace("@inseriretuttoiltesto", testostart);
+                String[] dest = e.getPath("destinatari_cambiostato").split(";");
+//            String[] dest = {"raffaele.cosco@faultless.it"};
+                sendMail("Microcredito", dest, testohtml, email.getOggetto());
+            }
+        } catch (Exception ex1) {
+        }
+
+    }
+
+    public static void notifica_cambiostato_SA(Entity e, ProgettiFormativi p) {
+        try {
+            Email email = e.getEmail("cambio_stato_SA");
+            String testostart = "";
+            switch (p.getStato().getId()) {
+                case "SE":
+                    testostart = "Si informa che l'Ufficio Yes I Start Up Calabria ha provveduto a inviare in errore il progetto formativo ID " + p.getId() + ".";
+                    break;
+                case "AE":
+                case "CE":
+                case "FAE":
+                case "FBE":
+                    testostart = "Si informa che l'Ufficio Yes I Start Up Calabria ha provveduto a inviare in errore il progetto formativo CIP " + p.getCip() + ".";
+                    break;
+                case "A":
+                case "FA":
+                    testostart = "Si informa che l'Ufficio Yes I Start Up Calabria ha provveduto a modificare lo stato del progetto formativo CIP " + p.getCip() + " in " + p.getStato().getDescrizione().toUpperCase() + ".";
+                    break;
+                case "C":
+                    testostart = "Si informa che l'Ufficio Yes I Start Up Calabria ha provveduto a modificare lo stato del progetto formativo CIP " + p.getCip()
+                            + " da FASE B a CHIUSO. Si invita a voler procedere con il caricamento della documentazione del corso.";
+                    break;
+                default:
+                    testostart = "";
+                    break;
+            }
+
+            if (!testostart.equals("")) {
+                String testohtml = email.getTesto();
+                testohtml = testohtml.replace("@inseriretuttoiltesto", testostart);
+                String[] dest = {p.getSoggetto().getEmail().toLowerCase()};
+                if (EmailValidator.getInstance().isValid(dest[0])) {
+//            String[] dest = {"raffaele.cosco@faultless.it"};
+                    sendMail("Microcredito", dest, testohtml, email.getOggetto());
+                }
+            }
+
+        } catch (Exception ex1) {
+        }
     }
 }

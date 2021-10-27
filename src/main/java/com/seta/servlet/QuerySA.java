@@ -38,7 +38,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 public class QuerySA extends HttpServlet {
     

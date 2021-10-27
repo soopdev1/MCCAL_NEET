@@ -75,7 +75,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class OperazioniMicro extends HttpServlet {
 
@@ -97,7 +97,6 @@ public class OperazioniMicro extends HttpServlet {
                             .replace("@email_tec", e.getPath("emailtecnico"))
                             .replace("@email_am", e.getPath("emailamministrativo"));
                     SendMailJet.sendMail("Microcredito", new String[]{sa.getEmail()}, email_txt, email.getOggetto());
-//                    resp.addProperty("result", true);
                 }
             }
             e.commit();
@@ -223,7 +222,6 @@ public class OperazioniMicro extends HttpServlet {
 
     protected void validatePrg(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-//        Utility.printRequest(request);
         Entity e = new Entity();
         JsonObject resp = new JsonObject();
         boolean check = true;
@@ -274,6 +272,10 @@ public class OperazioniMicro extends HttpServlet {
                     p.setMotivo(null);
                     e.merge(p);
                     e.commit();
+
+                    //INVIO MAIL
+                    SendMailJet.notifica_cambiostato_SA(e, p);
+
                 }
 
                 if (p.getStato().getId().equals("C")) {
@@ -361,6 +363,8 @@ public class OperazioniMicro extends HttpServlet {
             p.setStato(e.getEm().find(StatiPrg.class, p.getStato().getId().replace("1", "") + "E"));
             e.merge(p);
             e.commit();
+            //INVIO MAIL
+            SendMailJet.notifica_cambiostato_SA(e, p);
             resp.addProperty("result", true);
         } catch (PersistenceException ex) {
             ex.printStackTrace();

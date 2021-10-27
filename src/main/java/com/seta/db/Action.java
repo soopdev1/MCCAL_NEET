@@ -18,7 +18,7 @@ import javax.persistence.TypedQuery;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class Action {
 
@@ -94,7 +94,6 @@ public class Action {
 
         List<String> statiavvio = Arrays.asList(new String[]{"S", "S1"});
         List<String> staticoncluso = Arrays.asList(new String[]{"C", "C1", "CL", "AR"});
-        
 
         AtomicInteger in_formazione = new AtomicInteger(0);
         AtomicInteger in_avvio = new AtomicInteger(0);
@@ -103,16 +102,18 @@ public class Action {
             if (a1.getProgetto() == null) {
                 in_avvio.addAndGet(1);
             } else {
-                if (statiavvio.contains(a1.getProgetto().getStato().getId())) {
-                    in_formazione.addAndGet(1);
-                } else if (staticoncluso.contains(a1.getProgetto().getStato().getId())) {
-                    concluso.addAndGet(1);
-                } else {
-                    in_formazione.addAndGet(1);
+                if (a1.getStatopartecipazione().getId().equals("01")) {
+                    if (statiavvio.contains(a1.getProgetto().getStato().getId())) {
+                        in_formazione.addAndGet(1);
+                    } else if (staticoncluso.contains(a1.getProgetto().getStato().getId())) {
+                        concluso.addAndGet(1);
+                    } else {
+                        in_formazione.addAndGet(1);
+                    }
                 }
             }
         });
-        
+
         List<String> statipfok = Arrays.asList(new String[]{"S", "S1", "A", "A1", "FA", "FA1", "FB"});
         List<String> staticheck = Arrays.asList(new String[]{"FB1", "C", "C1", "CL"});
         AtomicInteger pf_ok = new AtomicInteger(0);
@@ -125,9 +126,9 @@ public class Action {
                 pf_chiusi.addAndGet(1);
             } else if (a1.getStato().getId().equals("KO")) {
                 pf_annullati.addAndGet(1);
-            } else if (statipfok.contains(a1.getStato().getId())){
+            } else if (statipfok.contains(a1.getStato().getId())) {
                 pf_ok.addAndGet(1);
-            } else if (staticheck.contains(a1.getStato().getId())){
+            } else if (staticheck.contains(a1.getStato().getId())) {
                 pf_check.addAndGet(1);
             }
         });
@@ -136,7 +137,7 @@ public class Action {
         out[1] = String.valueOf(concluso.get() + pregresso);
         out[2] = String.valueOf(in_formazione.get());
         out[3] = String.valueOf(in_avvio.get());
-        
+
         out[4] = String.valueOf(pf_ok.get());
         out[5] = String.valueOf(pf_chiusi.get());
         out[6] = String.valueOf(pf_check.get());
@@ -145,8 +146,8 @@ public class Action {
         e.close();
         return out;
     }
-    
-    public static void creastanze_faseB(int idpr){
+
+    public static void creastanze_faseB(int idpr) {
         Database db1 = new Database();
         db1.creastanze_faseB(idpr);
         db1.closeDB();

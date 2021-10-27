@@ -17,7 +17,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @Entity
 @Table(name = "selfiemployment_prestiti")

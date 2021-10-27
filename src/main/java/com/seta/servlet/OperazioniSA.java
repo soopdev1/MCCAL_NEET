@@ -32,6 +32,7 @@ import com.seta.domain.TipoFaq;
 import com.seta.domain.TitoliStudio;
 import com.seta.domain.User;
 import com.seta.entity.Presenti;
+import com.seta.util.SendMailJet;
 import com.seta.util.Utility;
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 import javax.persistence.PersistenceException;
@@ -53,7 +55,7 @@ import org.apache.commons.io.FileUtils;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 public class OperazioniSA extends HttpServlet {
 
@@ -565,7 +567,10 @@ public class OperazioniSA extends HttpServlet {
             e.merge(p);
             e.persist(new Storico_Prg("Creato", new Date(), p, p.getStato()));//storico progetto
             e.commit();
-
+            
+            //INVIO MAIL
+            SendMailJet.notifica_Controllo_MC(e, p);
+            
             resp.addProperty("result", true);
         } catch (PersistenceException | ParseException ex) {
             e.rollBack();
@@ -639,9 +644,9 @@ public class OperazioniSA extends HttpServlet {
 
             tipo_obb.remove(tipo);
 
-            for (DocumentiPrg d : doc_list) {
+            doc_list.forEach(d -> {
                 tipo_obb.remove(d.getTipo());
-            }
+            });
 
             e.begin();
             //creao il path
@@ -665,7 +670,6 @@ public class OperazioniSA extends HttpServlet {
                 List<TipoDoc_Allievi> doc_allievo;
                 StringBuilder msg = new StringBuilder();
                 StringBuilder warning = new StringBuilder();
-                double totale = 0, hh = 0;
                 boolean checkdocs = true, checkregistri = true;
                 msg.append("Sono stati caricati tutti i documenti necessari per questa fase. Ora il progetto può essere inviato al Microcredito per essere controllato.<br>");
                 warning.append("Tuttavia, i seguenti allievi non hanno effettuato le ore necessarie per la Fase B:<br>");
@@ -673,11 +677,11 @@ public class OperazioniSA extends HttpServlet {
                 for (Allievi allievo : prg.getAllievi().stream().filter(all -> all.getStatopartecipazione().getId().equals("01")).collect(Collectors.toList())) {//solo allievi regolarmente iscritti
                     doc_allievo = new ArrayList<>();
                     doc_allievo.addAll(tipo_obb_all);
-                    totale = 0;
+                    double totale = 0;
                     for (Documenti_Allievi doc : allievo.getDocumenti()) {
                         if (allievo.getEsito().equalsIgnoreCase("Fase B")) {
                             if (doc.getTipo().getId() == 5 && doc.getDeleted() == 0) {
-                                hh = (double) (doc.getOrarioend_mattina().getTime() - doc.getOrariostart_mattina().getTime());
+                                double hh = (double) (doc.getOrarioend_mattina().getTime() - doc.getOrariostart_mattina().getTime());
                                 if (doc.getOrariostart_pom() != null && doc.getOrarioend_pom() != null) {
                                     hh += (double) (doc.getOrarioend_pom().getTime() - doc.getOrariostart_pom().getTime());
                                 }
@@ -696,9 +700,9 @@ public class OperazioniSA extends HttpServlet {
                         }
                     }
                 }
-                for (DocumentiPrg dprg : prg.getDocumenti()) {
+                prg.getDocumenti().forEach(dprg -> {
                     tipo_obb.remove(dprg.getTipo());
-                }
+                });
                 //se sono stati caricati tutti i doc obbligatori per il progetto e per gli alunni, setto il progetto come idoneo per la prossima fase
                 if (tipo_obb.isEmpty() && checkdocs) {
                     prg.setControllable(1);
@@ -770,20 +774,23 @@ public class OperazioniSA extends HttpServlet {
             }
             if (p.getStato().getModifiche().getAllievi() == 1) {
                 List<Allievi> allievi_old = e.getAllieviProgettiFormativi(p);
-                Allievi a = new Allievi();
                 for (String s : request.getParameterValues("allievi[]")) {
-                    a = e.getEm().find(Allievi.class,
+                    Allievi a = e.getEm().find(Allievi.class,
                             Long.parseLong(s));
                     a.setCanaleconoscenza(request.getParameter("knowledge_" + s + "_input"));
                     a.setProgetto(p);
                     allievi_old.remove(a);
                     e.merge(a);
                 }
-                for (Allievi al : allievi_old) {
+                allievi_old.stream().map(al -> {
                     al.setProgetto(null);
+                    return al;
+                }).map(al -> {
                     al.setCanaleconoscenza(null);
+                    return al;
+                }).forEachOrdered(al -> {
                     e.merge(al);
-                }
+                });
             }
 
             e.merge(p);
@@ -885,10 +892,8 @@ public class OperazioniSA extends HttpServlet {
         JsonObject resp = new JsonObject();
         Entity e = new Entity();
         e.begin();
-
         try {
-            ProgettiFormativi p = e.getEm().find(ProgettiFormativi.class,
-                    Long.parseLong(request.getParameter("id")));
+            ProgettiFormativi p = e.getEm().find(ProgettiFormativi.class, Long.parseLong(request.getParameter("id")));
             Date today = new Date();
             checkResult check = checkScadenze(p);
             if (p.getStato().getId().equals("FA") || check.result) {
@@ -919,6 +924,12 @@ public class OperazioniSA extends HttpServlet {
                 }
                 e.merge(p);
                 e.commit();
+                
+                
+                //INVIO MAIL
+                SendMailJet.notifica_Controllo_MC(e, p);
+                
+                
                 resp.addProperty("result", true);
             } else {
                 resp.addProperty("result", false);
@@ -1152,9 +1163,9 @@ public class OperazioniSA extends HttpServlet {
                     }
                 }
             }
-            for (DocumentiPrg dprg : doc.getAllievo().getProgetto().getDocumenti()) {
+            doc.getAllievo().getProgetto().getDocumenti().forEach(dprg -> {
                 tipo_obb_prg.remove(dprg.getTipo());
-            }
+            });
             //se sono stati caricati tutti i doc obbligatori per il progetto e per gli alunni, setto il progetto come idoneo per la prossima fase
             if (tipo_obb_prg.isEmpty() && checkdocs) {
                 doc.getAllievo().getProgetto().setControllable(1);
@@ -1592,7 +1603,7 @@ public class OperazioniSA extends HttpServlet {
             registro.setOrarioend(registro.getOrariostart());
             List<DocumentiPrg> registri_day = e.getRegisterProgetto_by_Day(registro.getGiorno(), registro.getProgetto());
 
-            registri_day.stream().filter(r -> r.getId() != registro.getId()).forEach(d -> {
+            registri_day.stream().filter(r -> !Objects.equals(r.getId(), registro.getId())).forEach(d -> {
                 p.setOre(p.getOre() - d.getOre());
                 d.setDeleted(1);
                 d.setOre(0);
@@ -1772,10 +1783,8 @@ public class OperazioniSA extends HttpServlet {
     }
 
     private boolean checkFaseAllievi(List<Allievi> allievi) {
-        for (Allievi a : allievi) {
-            if (a.getEsito().equals("Fase B")) {
-                return true;
-            }
+        if (allievi.stream().anyMatch(a -> (a.getEsito().equals("Fase B")))) {
+            return true;
         }
         return false;
     }

@@ -19,14 +19,14 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
  */
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class ReadExcelAttività {
 
     public static void main(String[] args) {
         Entity e = new Entity();
         try {
-            Workbook workbook = WorkbookFactory.create(new File("C:\\Users\\agodino\\Desktop\\ELENCO AMMISSIONI YISUCAL.xlsx"));
+            Workbook workbook = WorkbookFactory.create(new File("C:\\Users\\rcosco\\Desktop\\ELENCO AMMISSIONI YISUCAL.xlsx"));
             Sheet sheet = workbook.getSheetAt(0);
 
             Iterator<Row> rows = sheet.iterator();

@@ -20,7 +20,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @Entity
 @Table(name = "documenti_allievi_pregresso")

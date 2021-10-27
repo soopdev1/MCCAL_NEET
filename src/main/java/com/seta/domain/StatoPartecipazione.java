@@ -15,7 +15,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @Entity
 @Table(name="stato_partecipazione")

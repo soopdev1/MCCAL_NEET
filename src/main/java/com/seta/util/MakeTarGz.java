@@ -24,7 +24,7 @@ import org.apache.commons.io.IOUtils;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class MakeTarGz {
 

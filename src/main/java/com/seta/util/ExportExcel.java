@@ -40,7 +40,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class ExportExcel {
 

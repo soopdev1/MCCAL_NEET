@@ -7,7 +7,7 @@ package com.seta.entity;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 public class Item {
 

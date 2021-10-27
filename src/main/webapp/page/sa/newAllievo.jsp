@@ -1,7 +1,7 @@
 <%-- 
     Document   : profile
     Created on : 18-set-2019, 12.31.26
-    Author     : agodino
+    Author     : rcosco
 --%>
 <%@page import="com.seta.domain.Condizione_Lavorativa"%>
 <%@page import="com.seta.domain.StatiPrg"%>

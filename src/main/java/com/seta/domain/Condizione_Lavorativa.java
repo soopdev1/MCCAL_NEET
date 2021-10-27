@@ -14,7 +14,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @Entity
 @Table(name = "condizione_lavorativa")

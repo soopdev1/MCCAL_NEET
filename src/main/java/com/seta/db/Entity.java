@@ -50,7 +50,7 @@ import javax.persistence.TypedQuery;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class Entity {
 

@@ -22,7 +22,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @Entity
 @Table(name = "documenti_allievi")

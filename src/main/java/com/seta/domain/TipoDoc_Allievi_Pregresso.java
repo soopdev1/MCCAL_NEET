@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @Entity
 @Table(name = "tipo_documenti_allievi_pregresso")

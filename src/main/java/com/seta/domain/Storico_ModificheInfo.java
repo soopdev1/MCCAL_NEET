@@ -22,7 +22,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author dolivo
+ * @author rcosco
  */
 @NamedQueries(value = {
     @NamedQuery(name = "storicomodifiche.bySA", query = "SELECT m FROM Storico_ModificheInfo m WHERE m.soggetto=:soggetto ORDER BY m.data DESC")})

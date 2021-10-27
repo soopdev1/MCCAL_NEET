@@ -7,7 +7,7 @@ package com.seta.util;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 import com.seta.db.Entity;
 import org.json.simple.JSONObject;

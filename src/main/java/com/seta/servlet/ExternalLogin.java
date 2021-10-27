@@ -32,7 +32,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 /**
  *
- * @author agodino
+ * @author rcosco
  */
 public class ExternalLogin extends HttpServlet {
 
