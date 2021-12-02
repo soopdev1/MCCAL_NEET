@@ -54,7 +54,7 @@ $('#range').daterangepicker({
         firstDay: 1,
         format: 'HH:mm',
         daysOfWeek: days,
-        monthNames: months,
+        monthNames: months
     }
 }, function (start, end, label) {
     min_time = start.format('HH:mm');

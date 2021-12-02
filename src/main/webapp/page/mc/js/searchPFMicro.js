@@ -1,4 +1,6 @@
 
+/* global getHtml, calculateHoursRegistro, formattedTime, KTUtil */
+
 var context = document.getElementById("searchPFMicro").getAttribute("data-context");
 
 $.getScript(context + '/page/partialView/partialView.js', function () {});
@@ -63,6 +65,8 @@ var KTDatatablesDataSourceAjaxServer = function () {
                 {data: 'stato.de_tipo',
                     className: 'text-center'},
                 {data: 'rendicontato',
+                    className: 'text-center'},
+                {data: 'importo',
                     className: 'text-center'},
                 {data: 'importo_ente',
                     className: 'text-center'}
@@ -187,6 +191,13 @@ var KTDatatablesDataSourceAjaxServer = function () {
                     }
                 }, {
                     targets: 13,
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        return currencyFormatDecimal(Number(data));
+                    }
+                }
+                , {
+                    targets: 14,
                     orderable: false,
                     render: function (data, type, row, meta) {
                         return currencyFormatDecimal(Number(data));
@@ -1119,14 +1130,35 @@ function rendiconta(idPrg) {
     });
 }
 
-function liquida(id) {
+function liquida(idPrg) {
+    swalConfirm("Liquida Progetto", "Sicuro di voler liquidare questo progetto?", function liquida() {
+        showLoad();
+        $.ajax({
+            type: "POST",
+            url: context + '/OperazioniMicro?type=liquidaPrg&id=' + idPrg,
+            success: function (data) {
+                closeSwal();
+                if (data.result) {
+                    swalSuccess('Successo', 'Progetto liquidato con successo');
+                    reload();
+                } else {
+                    swalError('Errore', data.message);
+                }
+            }
+        });
+    });
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function liquida_old(id) {
     var html = "<div class='form-group-marginless' id='swal_liquida'>"
-            + "<input class='form-control obbligatory' id='importo' placeholder='importo ente'>"
+            + "<input class='form-control obbligatory' id='importo' placeholder='IMPORTO RICONOSCIUTO AL SOGGETTO ATTUATORE'>"
             + "</div>";
     swal.fire({
         title: '<h2 class="kt-font-io-n"><b>Liquida Progetto</b></h2><br>',
         html: html,
         animation: false,
+        width:'50%',
         showCancelButton: true,
         confirmButtonText: '&nbsp;<i class="la la-check"></i>',
         cancelButtonText: '&nbsp;<i class="la la-close"></i>',
@@ -1155,14 +1187,14 @@ function liquida(id) {
         }
     }).then((result) => {
         if (result.value) {
-            liquidaPrg(id, result.value);
+            liquidaPrg_old(id, result.value);
         } else {
             swal.close();
         }
     });
 }
 
-function liquidaPrg(id, result) {
+function liquidaPrg_old(id, result) {
     showLoad();
     $.ajax({
         type: "POST",

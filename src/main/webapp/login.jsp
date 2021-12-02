@@ -10,6 +10,7 @@
     <%  Entity e = new Entity();
         String mantenance = e.getPath("mantenance");
         String manuale = e.getPath("manualeSA");
+        String manualeAMM = e.getPath("manualeAMM");
         e.close();
         if (mantenance.equals("Y")) {
             Utility.redirect(request, response, "noService.jsp");
@@ -104,6 +105,12 @@
                                             <a target="_blank" href="javascript:void(0);" class="kt-login__link document"><i class="fa fa-file-pdf kt-font-danger"></i> Guida all'uso della piattaforma</a>
                                         </div>
                                     </div>
+                                    <div class="col-12 text-center" style="margin-top:10px;">
+                                        <div class="col">
+                                            <input type="hidden" value="<%=request.getContextPath()%>/redirect.jsp?page=OperazioniGeneral&type=showDoc&path=<%=manualeAMM.replaceAll("\\\\", "/")%>">
+                                            <a target="_blank" href="javascript:void(0);" class="kt-login__link document"><i class="fa fa-file-pdf kt-font-danger"></i> Guida per la gestione amministrativa dei corsi</a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="kt-login__forgot">
@@ -187,7 +194,7 @@
             };
         </script>
 
-        
+
         <script type="text/javascript" src="assets/seta/js/fancy.js"></script>
         <script src="assets/vendors/general/jquery/dist/jquery.js" type="text/javascript"></script>
         <script src="assets/vendors/general/popper.js/dist/umd/popper.js" type="text/javascript"></script>

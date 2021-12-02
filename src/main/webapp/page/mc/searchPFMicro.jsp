@@ -216,7 +216,8 @@
                                                         <th class="text-uppercase text-center">Stato</th>
                                                         <th class="text-uppercase text-center">Errore O Verificare</th>
                                                         <th class="text-uppercase text-center">Redicontato</th>
-                                                        <th class="text-uppercase text-center">Importo Ente</th>
+                                                        <th class="text-uppercase text-center">Importo Riconosciuto al SA</th>
+                                                        <th class="text-uppercase text-center">Importo Rendicontato RegCal</th>
                                                     </tr>
                                                 </thead>
                                             </table>  

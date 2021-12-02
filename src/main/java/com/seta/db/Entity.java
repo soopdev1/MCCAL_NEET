@@ -124,7 +124,11 @@ public class Entity {
     }
 
     public String getPath(String id) {
-        return this.em.find(Path.class, id).getUrl();
+        try {
+            return this.em.find(Path.class, id).getUrl();
+        } catch (Exception e) {
+        }
+        return null;
     }
 
     public List<Item> listaRegioni() {
@@ -398,7 +402,6 @@ public class Entity {
             sql += "a.codicefiscale=:codicefiscale";
             param.put("codicefiscale", cf);
         }
-        
 
         TypedQuery<Docenti> q = this.em.createQuery(sql, Docenti.class);
 
@@ -639,6 +642,22 @@ public class Entity {
         TypedQuery q = this.em.createNamedQuery("da.byAllievo", Documenti_Allievi.class)
                 .setParameter("allievo", a);
         return q.getResultList().size() > 0 ? (List<Documenti_Allievi>) q.getResultList() : new ArrayList();
+    }
+
+    public List<Documenti_Allievi> getDocAllieviPR(ProgettiFormativi a) {
+
+        List<Documenti_Allievi> result = new ArrayList<>();
+
+        List<Allievi> al = getAllieviProgettiFormativi(a);
+        al.forEach(allievo -> {
+            TypedQuery q = this.em.createNamedQuery("da.byAllievo", Documenti_Allievi.class)
+                    .setParameter("allievo", allievo);
+            if (q.getResultList().size() > 0) {
+                result.addAll(q.getResultList());
+            }
+        });
+
+        return result;
     }
 
     public List<TipoDoc_Allievi> getTipoDocAllieviObbl(StatiPrg stato) {

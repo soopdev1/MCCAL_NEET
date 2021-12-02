@@ -5,6 +5,7 @@
  */
 package com.seta.util;
 
+import com.seta.db.Database;
 import com.seta.db.Entity;
 import com.seta.domain.Allievi;
 import com.seta.domain.Comuni;
@@ -15,27 +16,44 @@ import com.seta.domain.ProgettiFormativi;
 import com.seta.domain.TipoDoc;
 import com.seta.entity.Check2;
 import com.seta.entity.Check2.VerificheAllievo;
+import com.seta.entity.FadCalendar;
 import com.seta.entity.Presenti;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
@@ -247,7 +265,7 @@ public class ExportExcel {
             Row row = null;
 
             ProgettiFormativi p;
-            double ore_a = 0, ore_b = 0, ore_tot = 0;
+            double ore_a = 0.0, ore_b = 0.0, ore_tot = 0.0;
 
             for (Allievi a : allievi) {
                 row = sheet.createRow((short) cntriga);//riga successiva
@@ -257,7 +275,7 @@ public class ExportExcel {
                 ore_a = oreFa(p.getDocumenti(), a.getId());
                 ore_b = a.getEsito().equals("Fase B") ? oreFb(a.getDocumenti()) : 0;
                 ore_tot = ore_a + ore_b;
-
+                int ore_tot_int = new Double(ore_tot).intValue();
                 writeCell(row, a.getCognome());
                 writeCell(row, a.getNome());
                 writeCell(row, sdf.format(a.getDatanascita()));
@@ -293,18 +311,27 @@ public class ExportExcel {
                 writeCell(row, a.getIdea_impresa());
                 writeCell(row, sdf.format(p.getStart()));
                 writeCell(row, sdf.format(p.getEnd_fa()));
-                writeCell(row, String.valueOf(ore_a));
+
+//                writeCell(row, String.valueOf(ore_a));
+                writeCell(row, calcoladurata(ore_a));
+
                 writeCell(row, a.getEsito().equals("Fase B") ? sdf.format(p.getStart_fb()) : "-");
                 writeCell(row, a.getEsito().equals("Fase B") ? sdf.format(p.getEnd_fb()) : "-");
-                writeCell(row, String.valueOf(ore_b));
-                writeCell(row, String.valueOf(ore_tot));
+
+                //writeCell(row, String.valueOf(ore_b));
+                writeCell(row, calcoladurata(ore_b));
+
+                writeCell(row, String.valueOf(ore_tot_int));
                 writeCell(row, a.getSelfiemployement().getDescrizione());
                 writeCell(row, a.getStatopartecipazione().getId());
                 writeCell(row, a.getId().toString());
                 writeCell(row, a.getEsito().equals("Fase B") ? "A+B" : "A");
                 writeCell(row, "SI");
                 writeCell(row, "SI");
-                writeCell(row, String.format("€ %.2f", ore_tot * euro_ore));
+
+                BigDecimal bd = new BigDecimal(Double.valueOf(String.valueOf(ore_tot_int)) * euro_ore);
+                bd.setScale(2, RoundingMode.HALF_EVEN);
+                writeCell(row, String.format("€ %.2f", bd.doubleValue()));
 
                 cntriga++;
             }
@@ -322,8 +349,178 @@ public class ExportExcel {
         return "";
     }
 
-    public static void main(String[] args) {
-        compileTabella1(56L);
+    private static String calcoladurata(double doublemhours) {
+        if (doublemhours <= 0) {
+            return "00:00:00";
+        }
+        BigDecimal bd = new BigDecimal(doublemhours * 3600000L);
+        bd.setScale(2, RoundingMode.HALF_EVEN);
+        long millis = bd.longValue();
+        long hours = TimeUnit.MILLISECONDS.toHours(millis);
+        millis -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(millis);
+        millis -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(millis);
+        StringBuilder sb = new StringBuilder(64);
+        sb.append(StringUtils.leftPad(String.valueOf(hours), 2, "0"));
+        sb.append(":");
+        sb.append(StringUtils.leftPad(String.valueOf(minutes), 2, "0"));
+        sb.append(":");
+        sb.append(StringUtils.leftPad(String.valueOf(seconds), 2, "0"));
+        return sb.toString();
+    }
+
+//    public static void main(String[] args) {
+////        compileTabella1(56L);
+//        Database db1 = new Database();
+//        String base64or = db1.getBase64Report(38);
+//        db1.closeDB();
+//
+//        impostaregistri(base64or);
+//    }
+    public static boolean impostaregistri(String base64, List<Allievi> lista_allievi, List<FadCalendar> calendario, List<DocumentiPrg> list_doc_pr, List<Documenti_Allievi> list_doc_al) {
+        try {
+
+            SimpleDateFormat sdf_time = new SimpleDateFormat("HH:mm");
+            sdf_time.setTimeZone(TimeZone.getTimeZone("CET"));//per fixare l'ora dei presenti
+
+            try (XSSFWorkbook wb = new XSSFWorkbook(new ByteArrayInputStream(Base64.decodeBase64(base64)))) {
+                int max_sheet = wb.getNumberOfSheets();
+                for (int i = 0; i < max_sheet; i++) {
+                    int numerogruppo = i + 1;
+                    XSSFSheet sh1 = wb.getSheetAt(i);
+                    Iterator<Row> iterator = sh1.iterator();
+                    String fase = "A";
+                    while (iterator.hasNext()) {
+                        XSSFRow nextRow = (XSSFRow) iterator.next();
+                        Iterator<Cell> cellIterator = nextRow.cellIterator();
+                        Presenti pr = new Presenti();
+
+                        boolean valid = false;
+                        while (cellIterator.hasNext()) {
+                            XSSFCell cell = (XSSFCell) cellIterator.next();
+                            switch (cell.getCellType()) {
+                                case STRING:
+                                    String value = cell.getStringCellValue().trim().toUpperCase();
+                                    switch (cell.getColumnIndex()) {
+                                        case 1:
+                                            if (isValidFormat("dd/MM/yyyy", cell.getStringCellValue().trim())) {
+                                                valid = true;
+                                                pr.setData(formatStringtoStringDate(value, "dd/MM/yyyy", "yyyy-MM-dd"));
+                                            } else {
+                                                if (value.startsWith("FASE")) {
+                                                    fase = StringUtils.right(value, 1);
+                                                }
+                                            }
+                                            break;
+                                        case 4:
+                                            if (valid) {
+                                                pr.setCf(value);
+                                            }
+                                        case 7:
+                                            if (valid) {
+                                                pr.setOrestring(value);
+                                            } else {
+//                                                System.out.println(cell.getRowIndex() + " NON VALIDO " + value);
+                                            }
+                                            break;
+                                        case 2:
+
+                                            break;
+                                    }
+
+                            }
+                        }
+
+                        pr.setFase(fase);
+                        if (valid) {
+                            Allievi al1 = lista_allievi.stream().filter(a1 -> a1.getCodicefiscale().equals(pr.getCf())).findAny().orElse(null);
+                            if (al1 != null) {
+                                FadCalendar datacal = calendario.stream().filter(d1 -> d1.getData().equals(
+                                        formatStringtoStringDate(pr.getData(), "yyyy-MM-dd", "dd/MM/yyyy")
+                                ) && d1.getNumerocorso().equals(String.valueOf(numerogruppo))).findAny().orElse(null);
+
+                                if (datacal != null) {
+                                    //VERIFICA SE PRESENTE
+                                    switch (pr.getFase()) {
+                                        case "A":
+                                            DocumentiPrg registro = list_doc_pr.stream().filter(d2 -> 
+                                                    d2.getDeleted() == 0
+                                                    && d2.getGiorno() != null
+                                                    && d2.getGiorno().getTime() == getDate(pr.getData(), "yyyy-MM-dd").getTime()
+                                            ).findAny().orElse(null);
+                                            if (registro != null) {
+                                                System.out.println("PRESENTE " + numerogruppo + " - " + pr.getData() + " : " + pr.getFase() + " : "
+                                                        + al1.getId() + " : " + sdf_time.parse(datacal.getOrainizio()).getTime() + " : " + pr.getOrestring());
+                                            } else {
+                                                System.out.println(getDate(pr.getData(), "yyyy-MM-dd").getTime());
+                                                System.out.println("DA INSERIRE " + numerogruppo + " - " + pr.getData() + " : " + pr.getFase() + " : "
+                                                        + al1.getId() + " : " + sdf_time.parse(datacal.getOrainizio()).getTime() + " : " + pr.getOrestring());
+                                            }
+                                            break;
+                                        case "B":
+
+                                            break;
+                                    }
+
+                                } else {
+                                    System.out.println(numerogruppo + " - " + pr.getData() + " : " + pr.getFase() + " : " + al1.getId() + " : NON TROVATO");
+                                }
+                            } else {
+                                System.out.println(pr.getCf() + " NON TROVATO");
+                            }
+
+                        }
+                    }
+
+                }
+
+            }
+
+        } catch (Exception ex1) {
+            ex1.printStackTrace();
+        }
+        return false;
+    }
+
+    public static String formatStringtoStringDate(String dat, String pattern1, String pattern2) {
+        try {
+            return new SimpleDateFormat(pattern2).format(new SimpleDateFormat(pattern1).parse(dat));
+        } catch (Exception e) {
+        }
+        return dat;
+    }
+
+    public static Date getDate(String dat, String pattern1) {
+        try {
+            return new SimpleDateFormat(pattern1).parse(dat);
+        } catch (Exception e) {
+        }
+        return null;
+    }
+
+    public static boolean isValidFormat(String format, String value) {
+        LocalDateTime ldt;
+        DateTimeFormatter fomatter = DateTimeFormatter.ofPattern(format);
+        try {
+            ldt = LocalDateTime.parse(value, fomatter);
+            String result = ldt.format(fomatter);
+            return result.equals(value);
+        } catch (Exception e) {
+            try {
+                LocalDate ld = LocalDate.parse(value, fomatter);
+                String result = ld.format(fomatter);
+                return result.equals(value);
+            } catch (Exception exp) {
+                try {
+                    LocalTime lt = LocalTime.parse(value, fomatter);
+                    String result = lt.format(fomatter);
+                    return result.equals(value);
+                } catch (Exception e2) {
+                }
+            }
+        }
+        return false;
     }
 
     public static void compileTabella1(Long idprogetto) {
@@ -334,11 +531,10 @@ public class ExportExcel {
 
         String path = "F:\\mnt\\Microcredito\\Cloud\\tabella1_template_rev (1).xlsx";
         File template = new File(path);
-        String output_name = path+"_COMPILATA.xlsx";
+        String output_name = path + "_COMPILATA.xlsx";
 
 //        File template = new File(e.getPath("template_tabella_1"));
 //        String output_name = e.getPath("pathDocSA_Prg").replace("@rssa", p.getSoggetto().getId().toString()).replace("@folder", p.getId().toString()) + "tabella1_" + p.getCip() + ".xlsx";
-
         try {
             File out_file = new File(output_name);
             FileInputStream inputStream = new FileInputStream(template);
@@ -366,7 +562,7 @@ public class ExportExcel {
                     .filter((d) -> d.getGiorno() != null && d.getDeleted() == 0)
                     .collect(Collectors.toList()));
             //
-            
+
             for (DocumentiPrg d : registri) {
                 writeCell(row, column, sdf_short.format(d.getGiorno()));
                 writeCell(h_inizio, column, sdf_h.format(d.getOrariostart()));
@@ -391,16 +587,15 @@ public class ExportExcel {
                 writeCell(row, column, "x");
                 column++;
                 for (DocumentiPrg d : registri) {
-                    
+
                     d.getPresenti_list().forEach(p1 -> {
                         System.out.println(p1.toString());
                     });
-                    
+
                     Presenti presente = d.getPresenti_list().stream().filter(p1 -> p1.getId() == a.getId()).findFirst().orElse(null);
                     somma += presente != null ? presente.getOre_riconosciute() : 0;
                     writeCell(row, column, presente != null ? String.valueOf(presente.getOre_riconosciute()) : "0");
-                    
-                    
+
                     column++;
                 }
                 writeCell(row, (column >= 17 ? column : 17), String.valueOf(somma));
@@ -427,15 +622,12 @@ public class ExportExcel {
                 writeCell(row, (column >= 30 ? column : 30), String.valueOf(somma));
                 riga++;
             }
-            
-            
+
 //            workbook.write(out);
 //            out.close();
-
             //aggiungo l'excel della tabella 1 ai documenti
 //            e.persist(new DocumentiPrg(output_name, e.getEm().find(TipoDoc.class, 18L), p));
 //            e.commit();
-
         } catch (Exception ex) {
             ex.printStackTrace();
             e.insertTracking(null, "ExportExcel compileTabella1: " + ex.getMessage());
@@ -468,7 +660,7 @@ public class ExportExcel {
 
     }
 
-    private static double oreFa(List<DocumentiPrg> docs, long id) {
+    public static double oreFa(List<DocumentiPrg> docs, long id) {
         double ore = 0;
         for (DocumentiPrg d : docs) {
             if (d.getGiorno() != null) {
@@ -481,7 +673,7 @@ public class ExportExcel {
         return ore;
     }
 
-    private static double oreFb(List<Documenti_Allievi> docs) {
+    public static double oreFb(List<Documenti_Allievi> docs) {
         return docs.stream().filter(d -> d.getGiorno() != null).collect(Collectors.summingDouble(d -> d.getOrericonosciute()));
     }
 

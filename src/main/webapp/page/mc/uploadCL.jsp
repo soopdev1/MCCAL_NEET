@@ -134,11 +134,9 @@
                                         </div>
                                         <% }
                                             }%>
-
                                     </div>
-
                                     <%if (!registri.isEmpty()) {%>
-                                    <h4 class='kt-font-io' style="padding-top: 20px;">Regististri:</h4>
+                                    <h4 class='kt-font-io' style="padding-top: 20px;">Registri:</h4>
                                     <div class="kt-separator kt-separator--border kt-separator--space-xs"></div>
                                     <div class="row">
                                         <%for (DocumentiPrg d : registri) {%>

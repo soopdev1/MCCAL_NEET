@@ -95,7 +95,7 @@ var KTDatatablesDataSourceAjaxServer = function () {
                             if (row.stato.modifiche.docenti === 1) {
                                 option += '<a class="dropdown-item fancyBoxAntoRef" href="modifyDocentiProgetto.jsp?id=' + row.id + '"><i class="fas fa-user-edit"></i> Modifica Docenti</a>';
                             }
-                            if (row.stato.id === "FA" || row.stato.id === "FBE" || row.stato.id === "CE") {
+                            if (row.stato.id === "FA" || row.stato.id === "FB" || row.stato.id === "FBE" || row.stato.id === "CE") {
                                 option += '<a class="dropdown-item fancyBoxReload" href="uploadRegistroAula.jsp?id=' + row.id + '" ><i class="flaticon2-calendar-6"></i> Carica Registro d\'Aula</a>';
                             }
                             if (row.stato.modifica_doc === 1) {
@@ -466,11 +466,11 @@ function showRegistro(idregistro) {
 
 function confirmNext(id, stato) {
     var msg = "Sicuro di voler inviare a controllo il Progetto Formativo?";
-    if (stato == 'FA') {
+    if (stato === 'FA') {
         msg += "<br><br><b class='kt-font-danger'>Stai per terminare la FASE A.<br>&Egrave; necessario selezionare tutti gli allievi che accederanno alla FASE B; in caso contrario, non potranno essere caricati i registri individuali per gli allievi."
                 + "<br><br>Inoltre, una volta terminata La FASE A, non potranno essere caricati altri registri relativi ad essa.</b>"
                 + "<br>";
-    } else if (stato == 'FB') {
+    } else if (stato === 'FB') {
         msg += "<br><br><b class='kt-font-danger'>Stai per terminare la FASE B.<br>"
                 + "Inoltre, una volta terminata La FASE B, non potranno essere caricati altri registri individuali relativi ad essa.</b>"
                 + "<br><br><b>Ti ricordiamo che non potranno essere effettuate modifiche fino ad avvenuto controllo da parte dell'ente Microcredito.</b>";

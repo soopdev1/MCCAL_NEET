@@ -5,7 +5,7 @@
  */
 package com.seta.entity;
 
-import java.util.List;
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 /**
  *
@@ -65,5 +65,12 @@ public class FadCalendar {
     public void setOrafine(String orafine) {
         this.orafine = orafine;
     }
+    
+    
+     @Override
+    public String toString() {
+        return ReflectionToStringBuilder.toString(this);
+    }
+    
 
 }

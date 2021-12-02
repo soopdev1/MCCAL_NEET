@@ -19,6 +19,49 @@ public class Presenti {
     Date start, end;
     double ore, ore_riconosciute = 0;
 
+    String fase, data, cf, orestring;
+
+    public Presenti(String fase, String data, String cf, String orestring, double ore, double ore_riconosciute) {
+        this.ore = ore;
+        this.ore_riconosciute = ore_riconosciute;
+        this.fase = fase;
+        this.data = data;
+        this.cf = cf;
+        this.orestring = orestring;
+    }
+
+    public String getFase() {
+        return fase;
+    }
+
+    public void setFase(String fase) {
+        this.fase = fase;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
+    }
+
+    public String getCf() {
+        return cf;
+    }
+
+    public void setCf(String cf) {
+        this.cf = cf;
+    }
+
+    public String getOrestring() {
+        return orestring;
+    }
+
+    public void setOrestring(String orestring) {
+        this.orestring = orestring;
+    }
+
     public Presenti(Long id, String nome, String cognome, Date start, Date end, double ore) {
         this.id = id;
         this.nome = nome;
@@ -101,5 +144,5 @@ public class Presenti {
     public String toString() {
         return org.apache.commons.lang3.builder.ReflectionToStringBuilder.toString(this, ToStringStyle.JSON_STYLE);
     }
-    
+
 }

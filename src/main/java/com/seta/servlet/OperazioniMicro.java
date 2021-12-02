@@ -6,6 +6,7 @@
 package com.seta.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.AtomicDouble;
 import com.google.gson.JsonObject;
 import com.seta.db.Database;
 import com.seta.db.Entity;
@@ -39,10 +40,13 @@ import com.seta.entity.Check2;
 import com.seta.entity.Check2.Fascicolo;
 import com.seta.entity.Check2.Gestione;
 import com.seta.entity.Check2.VerificheAllievo;
+import com.seta.entity.FadCalendar;
 import com.seta.entity.Presenti;
 import com.seta.util.CompilePdf;
 import com.seta.util.ExportExcel;
 import static com.seta.util.ExportExcel.lezioniDocente;
+import static com.seta.util.ExportExcel.oreFa;
+import static com.seta.util.ExportExcel.oreFb;
 import com.seta.util.ImportExcel;
 import static com.seta.util.MakeTarGz.createTarArchive;
 import com.seta.util.SendMailJet;
@@ -66,6 +70,8 @@ import com.seta.util.Utility;
 import static com.seta.util.Utility.estraiEccezione;
 import static com.seta.util.Utility.patternITA;
 import static com.seta.util.Utility.patternSql;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.stream.Collectors;
@@ -568,27 +574,27 @@ public class OperazioniMicro extends HttpServlet {
         try {
             e.begin();
             //29-04-2020 MODIFICA - TOGLIERE IMPORTO CHECKLIST
-//            String prezzo = request.getParameter("kt_inputmask_7").substring(request.getParameter("kt_inputmask_7").lastIndexOf("_"));
+            String prezzo = request.getParameter("kt_inputmask_7").substring(request.getParameter("kt_inputmask_7").lastIndexOf("_"));
             ProgettiFormativi prg = e.getEm().find(ProgettiFormativi.class, Long.parseLong(request.getParameter("idprogetto")));
-//            prg.setImporto(Double.valueOf(prezzo.replaceAll("[._]", "").replace(",", ".").trim()));
-//            e.merge(prg);
-//            e.commit();
-
-            //14-10-2020 MODIFICA - TOGLIERE IMPORTO CHECKLIST
-            double ore_convalidate = 0;
-            for (DocumentiPrg d : prg.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList())) {
-                ore_convalidate += d.getOre_convalidate();
-            }
-            for (Allievi a : prg.getAllievi()) {
-                for (Documenti_Allievi d : a.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList())) {
-                    ore_convalidate += d.getOrericonosciute() == null ? 0 : d.getOrericonosciute();
-                }
-            }
-            double prezzo_ore = Double.parseDouble(e.getPath("euro_ore"));
-            prg.setImporto(ore_convalidate * prezzo_ore);
+            prg.setImporto(Double.valueOf(prezzo.replaceAll("[._]", "").replace(",", ".").trim()));
             e.merge(prg);
             e.commit();
 
+            //14-10-2020 MODIFICA - TOGLIERE IMPORTO CHECKLIST
+//            double ore_convalidate = 0;
+//            for (DocumentiPrg d : prg.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList())) {
+//                ore_convalidate += d.getOre_convalidate();
+//            }
+//            for (Allievi a : prg.getAllievi()) {
+//                for (Documenti_Allievi d : a.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList())) {
+//                    ore_convalidate += d.getOrericonosciute() == null ? 0 : d.getOrericonosciute();
+//                }
+//            }
+//            double prezzo_ore = Double.parseDouble(e.getPath("euro_ore"));
+//            prg.setImporto(ore_convalidate * prezzo_ore);
+//            
+//            e.merge(prg);
+//            e.commit();
             cl2.setAllievi_tot(Integer.valueOf(request.getParameter("allievi_start")));
             cl2.setAllievi_ended(Integer.valueOf(request.getParameter("allievi_end")));
             cl2.setProgetto(prg);
@@ -1281,22 +1287,38 @@ public class OperazioniMicro extends HttpServlet {
             e.begin();
             ProgettiFormativi prg = e.getEm().find(ProgettiFormativi.class, Long.parseLong(request.getParameter("id")));
             prg.setRendicontato(1);
-            e.merge(prg);
-
             double euro_ore = Double.parseDouble(e.getPath("euro_ore"));
 
-            List<DocumentiPrg> registri = prg.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList());
-
-            for (Allievi a : prg.getAllievi()) {
-                double ore_convalidate = 0;
-                for (Documenti_Allievi d : a.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList())) {
-                    ore_convalidate += d.getOrericonosciute();
-                }
-                for (DocumentiPrg r : registri) {
-                    ore_convalidate += r.getPresenti_list().stream().filter(x -> x.getId() == a.getId()).findFirst().orElse(new Presenti()).getOre_riconosciute();
-                }
-                a.setImporto(ore_convalidate * euro_ore);
-                e.merge(a);
+//            List<DocumentiPrg> registri = prg.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList());
+//            for (Allievi a : prg.getAllievi()) {
+//                double ore_convalidate = 0;
+//                for (Documenti_Allievi d : a.getDocumenti().stream().filter(p -> p.getGiorno() != null && p.getDeleted() == 0).collect(Collectors.toList())) {
+//                    ore_convalidate += d.getOrericonosciute();
+//                }
+//                for (DocumentiPrg r : registri) {
+//                    ore_convalidate += r.getPresenti_list().stream().filter(x -> x.getId() == a.getId()).findFirst().orElse(new Presenti()).getOre_riconosciute();
+//                }
+//                a.setImporto(ore_convalidate * euro_ore);
+//                e.merge(a);
+//            }
+            try {
+                AtomicDouble importoente = new AtomicDouble(0.0);
+                prg.getAllievi().stream()
+                        .filter(a -> a.getStatopartecipazione().getId().equals("01")).forEach(a -> {
+                    double ore_a = oreFa(prg.getDocumenti(), a.getId());
+                    double ore_b = a.getEsito().equals("Fase B") ? oreFb(a.getDocumenti()) : 0;
+                    double ore_tot = ore_a + ore_b;
+                    int ore_tot_int = new Double(ore_tot).intValue();
+                    BigDecimal bd = new BigDecimal(Double.valueOf(String.valueOf(ore_tot_int)) * euro_ore);
+                    bd.setScale(2, RoundingMode.HALF_EVEN);
+                    a.setImporto(bd.doubleValue());
+                    e.merge(a);
+                    importoente.addAndGet(bd.doubleValue());
+                });
+                prg.setImporto_ente(importoente.get());
+                e.merge(prg);
+            } catch (Exception ex2) {
+                ex2.printStackTrace();
             }
 
             e.persist(new Storico_Prg("Progetto Rendicontato", new Date(), prg, prg.getStato()));
@@ -1447,6 +1469,8 @@ public class OperazioniMicro extends HttpServlet {
             Part part = request.getPart("file");
             if (part != null && part.getSubmittedFileName() != null && part.getSubmittedFileName().length() > 0) {
                 ProgettiFormativi pf = e.getEm().find(ProgettiFormativi.class, Long.parseLong(idpr));
+                List<DocumentiPrg> list_doc_pr = e.getDocPrg(pf);
+                List<Documenti_Allievi> list_doc_al = e.getDocAllieviPR(pf);
                 DocumentiPrg registroFADtemp = pf.getDocumenti().stream().filter(d1 -> d1.getTipo().getId() == 30L).findAny().orElse(null);
                 if (registroFADtemp != null) {
 
@@ -1469,7 +1493,12 @@ public class OperazioniMicro extends HttpServlet {
                                 st.executeUpdate(update);
                             }
                         }
+                        List<FadCalendar> calendarioFAD = db1.calendarioFAD(idpr);
                         db1.closeDB();
+
+                        //leggifile e impostaregistro
+                        ExportExcel.impostaregistri(base64, pf.getAllievi(), calendarioFAD, list_doc_pr, list_doc_al);
+
                         resp.addProperty("result", true);
                     } else {
                         resp.addProperty("result", false);
@@ -1504,14 +1533,14 @@ public class OperazioniMicro extends HttpServlet {
         JsonObject resp = new JsonObject();
         Entity e = new Entity();
         try {
-            double importo = Double.parseDouble(request.getParameter("importo")
-                    .substring(request.getParameter("importo").lastIndexOf("_"))
-                    .replaceAll("[._]", "")
-                    .replace(",", ".").trim());
+//            double importo = Double.parseDouble(request.getParameter("importo")
+//                    .substring(request.getParameter("importo").lastIndexOf("_"))
+//                    .replaceAll("[._]", "")
+//                    .replace(",", ".").trim());
             e.begin();
             ProgettiFormativi prg = e.getEm().find(ProgettiFormativi.class, Long.parseLong(request.getParameter("id")));
             prg.setRendicontato(2);
-            prg.setImporto_ente(importo);
+//            prg.setImporto_ente(importo);
             e.merge(prg);
             e.commit();
             resp.addProperty("result", true);
@@ -1519,7 +1548,7 @@ public class OperazioniMicro extends HttpServlet {
             ex.printStackTrace();
             e.insertTracking(String.valueOf(((User) request.getSession().getAttribute("user")).getId()), "OperazioniMicro liquidaPrg: " + ex.getMessage());
             resp.addProperty("result", false);
-            resp.addProperty("message", "Errore: non &egrave; stato liquidare il progettto.");
+            resp.addProperty("message", "Errore: non &egrave; stato possibile liquidare il progettto.");
         } finally {
             e.close();
         }

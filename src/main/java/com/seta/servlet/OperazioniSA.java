@@ -1386,6 +1386,9 @@ public class OperazioniSA extends HttpServlet {
     }
 
     protected void uploadRegistrioAula(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        
+//        dsadsdsa
+//        
         Entity e = new Entity();
         JsonObject resp = new JsonObject();
         User us = (User) request.getSession().getAttribute("user");
