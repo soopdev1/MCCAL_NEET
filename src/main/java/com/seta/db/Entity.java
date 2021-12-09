@@ -84,7 +84,9 @@ public class Entity {
     }
 
     public void rollBack() {
-        this.em.getTransaction().rollback();
+        if (this.em.getTransaction().isActive()) {
+            this.em.getTransaction().rollback();
+        }
     }
 
     public void flush() {
