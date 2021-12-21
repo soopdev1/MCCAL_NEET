@@ -253,95 +253,90 @@ public class ExportExcel {
 
             File out_file = new File(output_name);
             FileInputStream inputStream = new FileInputStream(template);
-            FileOutputStream out = new FileOutputStream(out_file);
+            try (FileOutputStream out = new FileOutputStream(out_file)) {
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                int cntriga = 1;
+                Row row = null;
+                ProgettiFormativi p;
 
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-            int cntriga = 1;
-
-            Row row = null;
-
-            ProgettiFormativi p;
-            double ore_a = 0.0, ore_b = 0.0, ore_tot = 0.0;
-
-            for (Allievi a : allievi) {
-                row = sheet.createRow((short) cntriga);//riga successiva
-                colonna = 0;
-
-                p = a.getProgetto();
-                ore_a = oreFa(p.getDocumenti(), a.getId());
-                ore_b = a.getEsito().equals("Fase B") ? oreFb(a.getDocumenti()) : 0;
-                ore_tot = ore_a + ore_b;
-                int ore_tot_int = new Double(ore_tot).intValue();
-                writeCell(row, a.getCognome());
-                writeCell(row, a.getNome());
-                writeCell(row, sdf.format(a.getDatanascita()));
-                writeCell(row, a.getCodicefiscale());
-                writeCell(row, a.getSesso());
-                writeCell(row, a.getComune_nascita().getCittadinanza() == 0 ? "ITALIA" : a.getComune_nascita().getNome());
-                writeCell(row, a.getComune_nascita().getCittadinanza() == 0 ? "000" : a.getComune_nascita().getIstat());
-                writeCell(row, a.getComune_nascita().getNome());
-                writeCell(row, a.getComune_nascita().getProvincia());
-                writeCell(row, a.getTelefono());
-                writeCell(row, a.getEmail());
-                writeCell(row, a.getComune_residenza().getNome());
-                writeCell(row, a.getIndirizzoresidenza());
-                writeCell(row, a.getComune_residenza().getRegione());
-                writeCell(row, a.getComune_residenza().getProvincia());
-                writeCell(row, getCodIstat(a.getComune_residenza()));
-                writeCell(row, a.getComune_domicilio().getNome());
+                double ore_a = 0.0, ore_b = 0.0, ore_tot = 0.0;
+                for (Allievi a : allievi) {
+                    row = sheet.createRow((short) cntriga);//riga successiva
+                    colonna = 0;
+                    List<Documenti_Allievi> regvalidiB = a.getDocumenti().stream().filter(d1 -> d1.getDeleted() == 0).collect(Collectors.toList());
+                    p = a.getProgetto();
+                    List<DocumentiPrg> regvalidiA = p.getDocumenti().stream().filter(d1 -> d1.getDeleted() == 0).collect(Collectors.toList());
+                    ore_a = oreFa(regvalidiA, a.getId());
+                    ore_b = a.getEsito().equals("Fase B") ? oreFb(regvalidiB) : 0;
+                    ore_tot = ore_a + ore_b;
+                    int ore_tot_int = new Double(ore_tot).intValue();
+                    writeCell(row, a.getCognome());
+                    writeCell(row, a.getNome());
+                    writeCell(row, sdf.format(a.getDatanascita()));
+                    writeCell(row, a.getCodicefiscale());
+                    writeCell(row, a.getSesso());
+                    writeCell(row, a.getComune_nascita().getCittadinanza() == 0 ? "ITALIA" : a.getComune_nascita().getNome());
+                    writeCell(row, a.getComune_nascita().getCittadinanza() == 0 ? "000" : a.getComune_nascita().getIstat());
+                    writeCell(row, a.getComune_nascita().getNome());
+                    writeCell(row, a.getComune_nascita().getProvincia());
+                    writeCell(row, a.getTelefono());
+                    writeCell(row, a.getEmail());
+                    writeCell(row, a.getComune_residenza().getNome());
+                    writeCell(row, a.getIndirizzoresidenza());
+                    writeCell(row, a.getComune_residenza().getRegione());
+                    writeCell(row, a.getComune_residenza().getProvincia());
+                    writeCell(row, getCodIstat(a.getComune_residenza()));
+                    writeCell(row, a.getComune_domicilio().getNome());
 //                writeCell(row, a.getComune_domicilio().getRegione());
-                writeCell(row, a.getComune_domicilio().getProvincia());
-                writeCell(row, getCodIstat(a.getComune_domicilio()));
-                writeCell(row, a.getTitoloStudio().getDescrizione());
-                writeCell(row, a.getTitoloStudio().getCodice());
-                //29-04-2020 MODIFICA - CONDIZIONE LAVORATIVA PRECEDENTE
-                //writeCell(row, a.getNeet());
-                writeCell(row, a.getCondizione_lavorativa().getDescrizione());
-                writeCell(row, a.getCondizione_mercato().getId());
-                writeCell(row, sdf.format(a.getData_up()));
-                writeCell(row, sdf.format(a.getIscrizionegg()));
-                writeCell(row, a.getCpi().getDescrizione());
-                writeCell(row, String.valueOf(calcolaEta(a.getDatanascita())));
-                writeCell(row, p.getSoggetto().getRagionesociale());
-                writeCell(row, p.getCip());
-                writeCell(row, a.getIdea_impresa());
-                writeCell(row, sdf.format(p.getStart()));
-                writeCell(row, sdf.format(p.getEnd_fa()));
+                    writeCell(row, a.getComune_domicilio().getProvincia());
+                    writeCell(row, getCodIstat(a.getComune_domicilio()));
+                    writeCell(row, a.getTitoloStudio().getDescrizione());
+                    writeCell(row, a.getTitoloStudio().getCodice());
+//29-04-2020 MODIFICA - CONDIZIONE LAVORATIVA PRECEDENTE
+//writeCell(row, a.getNeet());
+                    writeCell(row, a.getCondizione_lavorativa().getDescrizione());
+                    writeCell(row, a.getCondizione_mercato().getId());
+                    writeCell(row, sdf.format(a.getData_up()));
+                    writeCell(row, sdf.format(a.getIscrizionegg()));
+                    writeCell(row, a.getCpi().getDescrizione());
+                    writeCell(row, String.valueOf(calcolaEta(a.getDatanascita())));
+                    writeCell(row, p.getSoggetto().getRagionesociale());
+                    writeCell(row, p.getCip());
+                    writeCell(row, a.getIdea_impresa());
+                    writeCell(row, sdf.format(p.getStart()));
+                    writeCell(row, sdf.format(p.getEnd_fa()));
 
 //                writeCell(row, String.valueOf(ore_a));
-                writeCell(row, calcoladurata(ore_a));
+                    writeCell(row, calcoladurata(ore_a));
 
-                writeCell(row, a.getEsito().equals("Fase B") ? sdf.format(p.getStart_fb()) : "-");
-                writeCell(row, a.getEsito().equals("Fase B") ? sdf.format(p.getEnd_fb()) : "-");
+                    writeCell(row, a.getEsito().equals("Fase B") ? sdf.format(p.getStart_fb()) : "-");
+                    writeCell(row, a.getEsito().equals("Fase B") ? sdf.format(p.getEnd_fb()) : "-");
 
-                //writeCell(row, String.valueOf(ore_b));
-                writeCell(row, calcoladurata(ore_b));
+//writeCell(row, String.valueOf(ore_b));
+                    writeCell(row, calcoladurata(ore_b));
 
-                writeCell(row, String.valueOf(ore_tot_int));
-                writeCell(row, a.getSelfiemployement().getDescrizione());
-                writeCell(row, a.getStatopartecipazione().getId());
-                writeCell(row, a.getId().toString());
-                writeCell(row, a.getEsito().equals("Fase B") ? "A+B" : "A");
-                writeCell(row, "SI");
-                writeCell(row, "SI");
+                    writeCell(row, String.valueOf(ore_tot_int));
+                    writeCell(row, a.getSelfiemployement().getDescrizione());
+                    writeCell(row, a.getStatopartecipazione().getId());
+                    writeCell(row, a.getId().toString());
+                    writeCell(row, a.getEsito().equals("Fase B") ? "A+B" : "A");
+                    writeCell(row, "SI");
+                    writeCell(row, "SI");
 
-                BigDecimal bd = new BigDecimal(Double.valueOf(String.valueOf(ore_tot_int)) * euro_ore);
-                bd.setScale(2, RoundingMode.HALF_EVEN);
-                writeCell(row, String.format("€ %.2f", bd.doubleValue()));
+                    BigDecimal bd = new BigDecimal(Double.valueOf(String.valueOf(ore_tot_int)) * euro_ore);
+                    bd.setScale(2, RoundingMode.HALF_EVEN);
+                    writeCell(row, String.format("€ %.2f", bd.doubleValue()));
 
-                cntriga++;
+                    cntriga++;
+                }
+                Iterator<Cell> cells = row.cellIterator();//fa il resize di tutte le celle
+                while (cells.hasNext()) {
+                    sheet.autoSizeColumn(cells.next().getColumnIndex());
+                }
+                workbook.write(out);
             }
-
-            Iterator<Cell> cells = row.cellIterator();//fa il resize di tutte le celle
-            while (cells.hasNext()) {
-                sheet.autoSizeColumn(cells.next().getColumnIndex());
-            }
-            workbook.write(out);
-            out.close();
             return output_name;
         } catch (IOException ex) {
             e.insertTracking(null, "ExportExcel createExcelAllievi: " + ex.getMessage());
@@ -444,8 +439,8 @@ public class ExportExcel {
                                     //VERIFICA SE PRESENTE
                                     switch (pr.getFase()) {
                                         case "A":
-                                            DocumentiPrg registro = list_doc_pr.stream().filter(d2 -> 
-                                                    d2.getDeleted() == 0
+                                            DocumentiPrg registro = list_doc_pr.stream().filter(d2
+                                                    -> d2.getDeleted() == 0
                                                     && d2.getGiorno() != null
                                                     && d2.getGiorno().getTime() == getDate(pr.getData(), "yyyy-MM-dd").getTime()
                                             ).findAny().orElse(null);
