@@ -141,89 +141,79 @@ public class ExportExcel {
         try {
             File out_file = new File(output_name);
             FileInputStream inputStream = new FileInputStream(template);
-            FileOutputStream out = new FileOutputStream(out_file);
-
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            Sheet sheet = workbook.getSheetAt(0);
-
-            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-
-            Row row = sheet.getRow(4);
-            writeCell(row, 2, p.getSoggetto().getRagionesociale());
-            writeCell(row, 4, p.getSoggetto().getProtocollo());
-            writeCell(row, 6, p.getId().toString());
-            row = sheet.getRow(5);
-            writeCell(row, 2, p.getCip());
-            writeCell(row, 4, sdf.format(p.getStart()));
-            writeCell(row, 6, sdf.format(p.getEnd()));
-            row = sheet.getRow(6);
-//            writeCell(row, 2, String.valueOf(p.getAllievi().size()));
-//            writeCell(row, 4, String.valueOf(countAllieviEnd(p.getAllievi())));
-            writeCell(row, 2, String.valueOf(check.getAllievi_tot()));
-            writeCell(row, 4, String.valueOf(check.getAllievi_ended()));
-            row = sheet.getRow(7);
-            writeCell(row, 6, check.getNumero_min());
-
-            int riga = 11, column;
-
-            for (VerificheAllievo a : check.getVerifiche_allievi()) {
-                column = 1;
-                row = sheet.getRow(riga);
-                writeCell(row, column, a.getAllievo().getCognome() + " " + a.getAllievo().getNome());
-                column++;
-                writeCell(row, column, a.getM1());
-                column++;
-                writeCell(row, column, a.getM8());
-                column++;
-                writeCell(row, column, a.getSe());
-                column++;
-                writeCell(row, column, a.getPi());
-                column++;
-                writeCell(row, column, a.getRegistro());
-                column++;
-                riga++;
+            try (FileOutputStream out = new FileOutputStream(out_file)) {
+                Workbook workbook = WorkbookFactory.create(inputStream);
+                Sheet sheet = workbook.getSheetAt(0);
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                Row row = sheet.getRow(4);
+                writeCell(row, 2, p.getSoggetto().getRagionesociale());
+                writeCell(row, 4, p.getSoggetto().getProtocollo());
+                writeCell(row, 6, p.getId().toString());
+                row = sheet.getRow(5);
+                writeCell(row, 2, p.getCip());
+                writeCellDate(row, 4, p.getStart());
+                writeCellDate(row, 6, p.getEnd());
+                row = sheet.getRow(6);
+                //            writeCell(row, 2, String.valueOf(p.getAllievi().size()));
+                //            writeCell(row, 4, String.valueOf(countAllieviEnd(p.getAllievi())));
+                writeCellInt(row, 2, check.getAllievi_tot());
+                writeCellInt(row, 4, check.getAllievi_ended());
+row = sheet.getRow(7);
+writeCell(row, 6, check.getNumero_min());
+int riga = 11, column;
+for (VerificheAllievo a : check.getVerifiche_allievi()) {
+    column = 1;
+    row = sheet.getRow(riga);
+    writeCell(row, column, a.getAllievo().getCognome() + " " + a.getAllievo().getNome());
+    column++;
+    writeCell(row, column, a.getM1());
+    column++;
+    writeCell(row, column, a.getM8());
+    column++;
+    writeCell(row, column, a.getSe());
+    column++;
+    writeCell(row, column, a.getPi());
+    column++;
+    writeCell(row, column, a.getRegistro());
+    column++;
+    riga++;
+}   row = sheet.getRow(25);
+column = 1;
+writeCell(row, column, check.getGestione().getSwat());
+column++;
+writeCell(row, column, check.getGestione().getM13());
+column++;
+writeCell(row, column, check.getGestione().getConseganto());
+column++;
+writeCell(row, column, check.getGestione().getM9());
+column++;
+writeCell(row, column, check.getGestione().getCv());
+column++;
+writeCell(row, column, check.getGestione().getRegistro());
+column++;
+writeCell(row, column, check.getGestione().getStato());
+row = sheet.getRow(31);
+column = 1;
+writeCell(row, column, check.getFascicolo().getM2());
+column++;
+writeCell(row, column, check.getFascicolo().getFa());
+column++;
+writeCell(row, column, check.getFascicolo().getAllegati_fa());
+column++;
+writeCell(row, column, check.getFascicolo().getFb());
+column++;
+writeCell(row, column, check.getFascicolo().getAllegati_fb());
+column++;
+writeCell(row, column, check.getFascicolo().getM9());
+column = 1;
+row = sheet.getRow(32);
+writeCell(row, column, check.getFascicolo().getNote());
+row = sheet.getRow(26);
+writeCell(row, column, check.getFascicolo().getNote_esito());
+row = sheet.getRow(38);
+writeCell(row, 6, sdf.format(new Date()));
+workbook.write(out);
             }
-
-            row = sheet.getRow(25);
-            column = 1;
-            writeCell(row, column, check.getGestione().getSwat());
-            column++;
-            writeCell(row, column, check.getGestione().getM13());
-            column++;
-            writeCell(row, column, check.getGestione().getConseganto());
-            column++;
-            writeCell(row, column, check.getGestione().getM9());
-            column++;
-            writeCell(row, column, check.getGestione().getCv());
-            column++;
-            writeCell(row, column, check.getGestione().getRegistro());
-            column++;
-            writeCell(row, column, check.getGestione().getStato());
-
-            row = sheet.getRow(31);
-            column = 1;
-            writeCell(row, column, check.getFascicolo().getM2());
-            column++;
-            writeCell(row, column, check.getFascicolo().getFa());
-            column++;
-            writeCell(row, column, check.getFascicolo().getAllegati_fa());
-            column++;
-            writeCell(row, column, check.getFascicolo().getFb());
-            column++;
-            writeCell(row, column, check.getFascicolo().getAllegati_fb());
-            column++;
-            writeCell(row, column, check.getFascicolo().getM9());
-            column = 1;
-            row = sheet.getRow(32);
-            writeCell(row, column, check.getFascicolo().getNote());
-            row = sheet.getRow(26);
-            writeCell(row, column, check.getFascicolo().getNote_esito());
-
-            row = sheet.getRow(38);
-            writeCell(row, 6, sdf.format(new Date()));
-
-            workbook.write(out);
-            out.close();
 
             //aggiungo l'excel della check 2 ai documenti
             if (!p.getDocumenti().stream().filter(d -> d.getTipo().getId() == 28).findFirst().isPresent()) {
@@ -647,6 +637,16 @@ public class ExportExcel {
     private static void writeCell(Row row, int colonna, String dato) {
         Cell cell = row.getCell(colonna);
         cell.setCellValue(dato == null ? "-" : dato);
+    }
+    
+    private static void writeCellDate(Row row, int colonna, Date dato) {
+        Cell cell = row.getCell(colonna);
+        cell.setCellValue(dato);
+    }
+
+    private static void writeCellInt(Row row, int colonna, int dato) {
+        Cell cell = row.getCell(colonna);
+        cell.setCellValue(dato);
     }
 
     private static int calcolaEta(Date nascaita) {
