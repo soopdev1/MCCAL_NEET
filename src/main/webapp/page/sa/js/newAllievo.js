@@ -341,7 +341,7 @@ function checkinfoCF() {
                 url: context + "/OperazioniSA?type=getCodiceCatastaleComune&idcomune=" + $('#comunenascita').val(),
                 success: function (resp) {
                     $('#stato_div').removeClass("is-invalid-select").addClass("is-valid-select");
-                    if (check_comune_CF(resp,cf.val().substring(11, 15).toUpperCase())) {
+                    if (check_comune_CF(resp, cf.val().substring(11, 15).toUpperCase())) {
                         msg += err ? ", Comune di nascita" : "Comune di nascita";
                         $('#comunenascita_div').removeClass("is-valid-select").addClass("is-invalid-select");
                         err = true;
@@ -363,7 +363,8 @@ function checkinfoCF() {
             err = true;
         }
     } else {
-        if (("Z" + stato.val()) !== cf.val().substring(11, 15).toUpperCase()) {
+        var cf_sel = $('#stato').find('option:selected').attr("data-cf");
+        if (cf_sel !== cf.val().substring(11, 15).toUpperCase()) {
             msg += err ? ", Stato di nascita" : "Stato di nascita";
             $('#stato_div').removeClass("is-valid-select").addClass("is-invalid-select");
             err = true;
@@ -415,7 +416,7 @@ $('#capres').keydown(function (e) {
 });
 $('#capdom').keydown(function (e) {
     if (this.value.length > 4)
-        if (!(e.which === '46' || e.which ==='8' || e.which === '13')) // backspace/enter/del
+        if (!(e.which === '46' || e.which === '8' || e.which === '13')) // backspace/enter/del
             e.preventDefault();
 });
 
