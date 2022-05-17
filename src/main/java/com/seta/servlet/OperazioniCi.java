@@ -61,11 +61,11 @@ public class OperazioniCi extends HttpServlet {
             e.flush();
             e.commit();
             String dominio;
-            if (request.getContextPath().contains("Microcredito")) {
-                dominio = "http://172.31.224.48:8090/Microcredito/";
-            } else {
+//            if (request.getContextPath().contains("Microcredito")) {
+//                dominio = "http://172.31.224.48:8090/Microcredito/";
+//            } else {
                 dominio = e.getPath("dominio");
-            }
+//            }
             //manda mail
             Email email = e.getEmail("colloquio");
             email.setTesto(email.getTesto()

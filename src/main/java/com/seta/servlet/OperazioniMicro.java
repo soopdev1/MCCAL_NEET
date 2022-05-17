@@ -1018,11 +1018,11 @@ public class OperazioniMicro extends HttpServlet {
             String mailjet_secret = e.getPath("mailjet_secret");
             String link = e.getPath("linkfad");
             String dominio;
-            if (request.getContextPath().contains("Microcredito")) {
-                dominio = "http://172.31.224.48:8090/Microcredito/";
-            } else {
+//            if (request.getContextPath().contains("Microcredito")) {
+//                dominio = "http://172.31.224.48:8090/Microcredito/";
+//            } else {
                 dominio = e.getPath("dominio");
-            }
+//            }
 
             e.begin();
             FadMicro f = new FadMicro();

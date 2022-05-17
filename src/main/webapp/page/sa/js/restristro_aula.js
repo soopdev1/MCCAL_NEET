@@ -16,18 +16,18 @@ var my_start, my_end;
 function setDay() {
     old_start = new Date(millis_start);
     old_end = new Date(millis_end);
-    if (millis_start == 0) {
-        old_start.setHours(0, 0, 0);
+    if (millis_start === 0) {
+        old_start.setHours(7, 0, 0);
     }
-    if (millis_end == 0) {
-        old_end.setHours(20, 0, 0);
+    if (millis_end === 0) {
+        old_end.setHours(22, 0, 0);
     }
     start = new Date(millis_day), end = new Date(millis_day);
 
     start.setHours(old_start.getHours(), old_start.getMinutes());//setto ora minima inizio a fine lezione precedente
     end.setHours(old_end.getHours(), old_end.getMinutes());
 
-    if (millis_my_end == 0 && millis_my_start == 0) {
+    if (millis_my_end === 0 && millis_my_start === 0) {
         my_start = start;
         my_end = end;
     } else {
