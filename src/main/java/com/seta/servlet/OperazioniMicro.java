@@ -507,8 +507,8 @@ public class OperazioniMicro extends HttpServlet {
         Part p = request.getPart("file");
         Entity e = new Entity();
         try {
-            ProgettiFormativi prg = e.getEm().find(ProgettiFormativi.class, Long.parseLong(request.getParameter("idprogetto")));
-            TipoDoc tipo = e.getEm().find(TipoDoc.class, Long.parseLong(request.getParameter("id_tipo")));
+            ProgettiFormativi prg = e.getEm().find(ProgettiFormativi.class, Long.valueOf(request.getParameter("idprogetto")));
+            TipoDoc tipo = e.getEm().find(TipoDoc.class, Long.valueOf(request.getParameter("id_tipo")));
             List<TipoDoc> tipo_obb = e.getTipoDocObbl(prg.getStato());
 
             tipo_obb.remove(tipo);
@@ -1016,11 +1016,9 @@ public class OperazioniMicro extends HttpServlet {
             String pathtemp = e.getPath("pathTemp");
             String mailjet_api = e.getPath("mailjet_api");
             String mailjet_secret = e.getPath("mailjet_secret");
+            String mailjet_name = e.getPath("mailjet_name");
             String link = e.getPath("linkfad");
             String dominio;
-//            if (request.getContextPath().contains("Microcredito")) {
-//                dominio = "http://172.31.224.48:8090/Microcredito/";
-//            } else {
                 dominio = e.getPath("dominio");
 //            }
 
@@ -1057,7 +1055,7 @@ public class OperazioniMicro extends HttpServlet {
                         email.getTesto().replace("@user", s),
                         email.getOggetto(),
                         SendMailJet.createEVENT(Utility.sdmysql.format(f.getInizio()), Utility.sdmysql.format(f.getFine()), email.getOggetto(), pathtemp),
-                        mailjet_api, mailjet_secret);
+                        mailjet_api, mailjet_secret,mailjet_name);
 //                SendMailJet.sendMailNoDB("Microcredito", new String[]{s},
 //                        email.getTesto().replace("@user", s),
 //                        email.getOggetto(), mailjet_api, mailjet_secret);

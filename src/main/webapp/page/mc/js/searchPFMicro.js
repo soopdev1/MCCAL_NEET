@@ -503,17 +503,17 @@ function showRegistro(idregistro, controllare) {
 
     if (registro.orariostart_pom !== null) {
         doc_registro += getHtml("doc_registro_individiale_pomeriggio", context);
-        doc_registro = doc_registro.replace("@start_pome", formattedTime(registro.orariostart_pom).replace(":0", ":00"))
-                .replace("@end_pome", formattedTime(registro.orarioend_pom).replace(":0", ":00"));
+        doc_registro = doc_registro.replace("@start_pome", formattedTime(registro.orariostart_pom))
+                .replace("@end_pome", formattedTime(registro.orarioend_pom));
     } else {
         doc_registro = getHtml("doc_registro_individiale_mattina", context);
     }
     doc_registro = controllare === 1 ? (doc_registro + getHtml("doc_registro_individiale_ctrlore", context)) : doc_registro;
-    doc_registro = doc_registro.replace("@start_pome", formattedTime(registro.orariostart_pom).replace(":0", ":00"))
+    doc_registro = doc_registro.replace("@start_pome", formattedTime(registro.orariostart_pom))
             .replace("@date", formattedDate(new Date(registro.giorno)))
             .replace("@docente", registro.docente.cognome + " " + registro.docente.nome)
-            .replace("@start_mattina", formattedTime(registro.orariostart_mattina).replace(":0", ":00"))
-            .replace("@end_mattina", formattedTime(registro.orarioend_mattina).replace(":0", ":00"))
+            .replace("@start_mattina", formattedTime(registro.orariostart_mattina))
+            .replace("@end_mattina", formattedTime(registro.orarioend_mattina))
             .replace("@tot_ore", totalhh);
     ;
     doc_registro = registro.orericonosciute === null ? doc_registro.replace('@hh', totalhh).replace('@max', totalhh).replace("@msg", "Ore da riconoscere") : doc_registro.replace('@hh', doubletoHHmm(registro.orericonosciute)).replace('@max', totalhh).replace("@msg", "Ore riconosciute");

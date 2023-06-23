@@ -15,7 +15,7 @@ public class NewClass {
     public static void main(String[] args) {
         
         Entity e = new Entity();
-        ProgettiFormativi p = e.getEm().find(ProgettiFormativi.class, 104L);
+        ProgettiFormativi p = e.getEm().find(ProgettiFormativi.class, 122L);
         e.close();
 
         List<ProgettiFormativi> prgs = new ArrayList<>();
