@@ -4,7 +4,7 @@
     Author     : rcosco
 --%>
 
-<%@page import="com.seta.domain.User"%>
+<%@page import="rc.so.domain.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     User us = (User) session.getAttribute("user");

@@ -1,10 +1,10 @@
-<%@page import="com.seta.domain.TipoFaq"%>
-<%@page import="com.seta.domain.StatiPrg"%>
-<%@page import="com.seta.db.Entity"%>
+<%@page import="rc.so.domain.TipoFaq"%>
+<%@page import="rc.so.domain.StatiPrg"%>
+<%@page import="rc.so.db.Entity"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.domain.SoggettiAttuatori"%>
-<%@page import="com.seta.domain.User"%>
-<%@page import="com.seta.db.Action"%>
+<%@page import="rc.so.domain.SoggettiAttuatori"%>
+<%@page import="rc.so.domain.User"%>
+<%@page import="rc.so.db.Action"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%

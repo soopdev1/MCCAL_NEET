@@ -9,16 +9,16 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
-<%@page import="com.seta.domain.Documenti_Allievi"%>
-<%@page import="com.seta.domain.TipoDoc_Allievi"%>
-<%@page import="com.seta.domain.Allievi"%>
+<%@page import="rc.so.domain.Documenti_Allievi"%>
+<%@page import="rc.so.domain.TipoDoc_Allievi"%>
+<%@page import="rc.so.domain.Allievi"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.domain.StatiPrg"%>
-<%@page import="com.seta.domain.ProgettiFormativi"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.db.Action"%>
-<%@page import="com.seta.domain.User"%>
+<%@page import="rc.so.domain.StatiPrg"%>
+<%@page import="rc.so.domain.ProgettiFormativi"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.db.Action"%>
+<%@page import="rc.so.domain.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     User us = (User) session.getAttribute("user");

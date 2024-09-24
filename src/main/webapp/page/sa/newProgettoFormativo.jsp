@@ -3,17 +3,17 @@
     Created on : 18-set-2019, 12.31.26
     Author     : rcosco
 --%>
-<%@page import="com.seta.domain.NomiProgetto"%>
-<%@page import="com.seta.domain.StatiPrg"%>
-<%@page import="com.seta.domain.TipoDoc"%>
-<%@page import="com.seta.domain.Docenti"%>
+<%@page import="rc.so.domain.NomiProgetto"%>
+<%@page import="rc.so.domain.StatiPrg"%>
+<%@page import="rc.so.domain.TipoDoc"%>
+<%@page import="rc.so.domain.Docenti"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="com.seta.domain.SediFormazione"%>
-<%@page import="com.seta.domain.Allievi"%>
-<%@page import="com.seta.db.Action"%>
+<%@page import="rc.so.domain.SediFormazione"%>
+<%@page import="rc.so.domain.Allievi"%>
+<%@page import="rc.so.db.Action"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.domain.User"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.domain.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     User us = (User) session.getAttribute("user");

@@ -4,20 +4,20 @@
     Author     : rcosco
 --%>
 
-<%@page import="com.seta.domain.TipoDoc_Allievi_Pregresso"%>
-<%@page import="com.seta.domain.Documenti_Allievi_Pregresso"%>
-<%@page import="com.seta.domain.Allievi_Pregresso"%>
+<%@page import="rc.so.domain.TipoDoc_Allievi_Pregresso"%>
+<%@page import="rc.so.domain.Documenti_Allievi_Pregresso"%>
+<%@page import="rc.so.domain.Allievi_Pregresso"%>
 <%@page import="java.util.Date"%>
-<%@page import="com.seta.util.Utility"%>
+<%@page import="rc.so.util.Utility"%>
 <%@page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@page import="java.util.stream.Collectors"%>
 <%@page import="java.util.ArrayList"%>
-<%@page import="com.seta.domain.DocumentiPrg"%>
-<%@page import="com.seta.domain.TipoDoc"%>
+<%@page import="rc.so.domain.DocumentiPrg"%>
+<%@page import="rc.so.domain.TipoDoc"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.db.Action"%>
-<%@page import="com.seta.domain.User"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.db.Action"%>
+<%@page import="rc.so.domain.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     User us = (User) session.getAttribute("user");

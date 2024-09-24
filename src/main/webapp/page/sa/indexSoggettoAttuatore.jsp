@@ -1,14 +1,14 @@
 
-<%@page import="com.seta.domain.Allievi"%>
+<%@page import="rc.so.domain.Allievi"%>
 <%@page import="java.util.concurrent.TimeUnit"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
-<%@page import="com.seta.util.Utility"%>
+<%@page import="rc.so.util.Utility"%>
 <%@page import="java.time.temporal.ChronoUnit"%>
 <%@page import="java.time.ZoneId"%>
 <%@page import="java.time.LocalDateTime"%>
 <%@page import="java.time.LocalDateTime"%>
-<%@page import="com.seta.domain.DocumentiPrg"%>
+<%@page import="rc.so.domain.DocumentiPrg"%>
 <%@page import="java.util.Collections"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="java.util.Comparator"%>
@@ -16,13 +16,13 @@
 <%@page import="java.util.function.Predicate"%>
 <%@page import="java.util.Collection"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.domain.StatiPrg"%>
-<%@page import="com.seta.domain.ProgettiFormativi"%>
-<%@page import="com.seta.db.Entity"%>
+<%@page import="rc.so.domain.StatiPrg"%>
+<%@page import="rc.so.domain.ProgettiFormativi"%>
+<%@page import="rc.so.db.Entity"%>
 <%@page import="java.util.Date"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.seta.domain.User"%>
-<%@page import="com.seta.db.Action"%>
+<%@page import="rc.so.domain.User"%>
+<%@page import="rc.so.db.Action"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%

@@ -4,12 +4,12 @@
     Author     : rcosco
 --%>
 
-<%@page import="com.seta.domain.Docenti"%>
+<%@page import="rc.so.domain.Docenti"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.domain.ProgettiFormativi"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.db.Action"%>
-<%@page import="com.seta.domain.User"%>
+<%@page import="rc.so.domain.ProgettiFormativi"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.db.Action"%>
+<%@page import="rc.so.domain.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     User us = (User) session.getAttribute("user");

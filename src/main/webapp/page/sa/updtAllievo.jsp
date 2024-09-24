@@ -1,18 +1,18 @@
 
-<%@page import="com.seta.domain.Condizione_Lavorativa"%>
-<%@page import="com.seta.domain.Comuni"%>
-<%@page import="com.seta.domain.Condizione_Mercato"%>
+<%@page import="rc.so.domain.Condizione_Lavorativa"%>
+<%@page import="rc.so.domain.Comuni"%>
+<%@page import="rc.so.domain.Condizione_Mercato"%>
 <%@page import="java.util.Date"%>
-<%@page import="com.seta.domain.CPI"%>
+<%@page import="rc.so.domain.CPI"%>
 <%@page import="java.text.DateFormat"%>
-<%@page import="com.seta.domain.Allievi"%>
-<%@page import="com.seta.db.Action"%>
-<%@page import="com.seta.domain.TitoliStudio"%>
+<%@page import="rc.so.domain.Allievi"%>
+<%@page import="rc.so.db.Action"%>
+<%@page import="rc.so.domain.TitoliStudio"%>
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.entity.Item"%>
-<%@page import="com.seta.domain.User"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.entity.Item"%>
+<%@page import="rc.so.domain.User"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%
     User us = (User) session.getAttribute("user");

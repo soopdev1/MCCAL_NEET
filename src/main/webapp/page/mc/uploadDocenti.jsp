@@ -1,9 +1,9 @@
 
 <%@page import="java.util.List"%>
-<%@page import="com.seta.domain.FasceDocenti"%>
-<%@page import="com.seta.domain.User"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.db.Action"%>
+<%@page import="rc.so.domain.FasceDocenti"%>
+<%@page import="rc.so.domain.User"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.db.Action"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%

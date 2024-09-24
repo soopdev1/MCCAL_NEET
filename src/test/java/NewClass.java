@@ -1,7 +1,7 @@
 
-import com.seta.db.Entity;
-import com.seta.domain.ProgettiFormativi;
-import static com.seta.util.MakeTarGz.createTarArchive;
+import rc.so.db.Entity;
+import rc.so.domain.ProgettiFormativi;
+import static rc.so.util.MakeTarGz.createTarArchive;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;

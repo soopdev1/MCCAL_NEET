@@ -1,17 +1,17 @@
 
 <%@page import="java.util.ArrayList"%>
-<%@page import="com.seta.util.Utility"%>
+<%@page import="rc.so.util.Utility"%>
 <%@page import="java.util.HashMap"%>
-<%@page import="com.seta.domain.StatiPrg"%>
+<%@page import="rc.so.domain.StatiPrg"%>
 <%@page import="java.util.Map"%>
-<%@page import="com.seta.domain.ProgettiFormativi"%>
+<%@page import="rc.so.domain.ProgettiFormativi"%>
 <%@page import="java.util.stream.Collectors"%>
-<%@page import="com.seta.domain.Allievi"%>
+<%@page import="rc.so.domain.Allievi"%>
 <%@page import="java.util.List"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.domain.SoggettiAttuatori"%>
-<%@page import="com.seta.domain.User"%>
-<%@page import="com.seta.db.Action"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.domain.SoggettiAttuatori"%>
+<%@page import="rc.so.domain.User"%>
+<%@page import="rc.so.db.Action"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%

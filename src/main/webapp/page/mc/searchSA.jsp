@@ -1,10 +1,10 @@
 
-<%@page import="com.seta.domain.EstensioniFile"%>
-<%@page import="com.seta.domain.TipoDoc"%>
-<%@page import="com.seta.domain.TipoDoc_Allievi"%>
-<%@page import="com.seta.db.Entity"%>
-<%@page import="com.seta.domain.User"%>
-<%@page import="com.seta.db.Action"%>
+<%@page import="rc.so.domain.EstensioniFile"%>
+<%@page import="rc.so.domain.TipoDoc"%>
+<%@page import="rc.so.domain.TipoDoc_Allievi"%>
+<%@page import="rc.so.db.Entity"%>
+<%@page import="rc.so.domain.User"%>
+<%@page import="rc.so.db.Action"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <%
